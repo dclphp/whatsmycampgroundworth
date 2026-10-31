@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Free campground and RV park valuation. See what your campground is worth today and exactly how to make it worth more. No login, no documents, about 4 minutes.">
+<meta property="og:title" content="What's My Campground Worth?">
+<meta property="og:description" content="Free, confidential campground value estimate plus a report on how to make your park worth more.">
+<meta property="og:type" content="website">
+<style>html{-webkit-text-size-adjust:100%}body{margin:0;font-family:system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>What's My Campground Worth?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: park-sign header band, then a two-column worksheet (questions left, live estimate right) that stacks on phones */
+:root{
+  --bg:#f3f5f1; --paper:#ffffff; --ink:#18261f; --muted:#56655c; --line:#d5ddd5;
+  --spruce:#1f4a37; --spruce-ink:#f1f6f2; --lake:#1e6a8c; --amber:#c98a12; --amber-soft:#fbf1dc;
+  --warn:#a5492a; --good:#2f7a4f; --heading:#1f4a37;
+  --display:"Barlow Condensed","Arial Narrow",sans-serif;
+  --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111a15; --paper:#18241d; --ink:#e7eee9; --muted:#9fb0a5; --line:#2c3b32;
+  --spruce:#173a2b; --spruce-ink:#e9f2ec; --lake:#6fb6d6; --amber:#e3a83a; --amber-soft:#2d2512;
+  --warn:#e08a69; --good:#6cc28f; --heading:#9fd3b2; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111a15; --paper:#18241d; --ink:#e7eee9; --muted:#9fb0a5; --line:#2c3b32;
+  --spruce:#173a2b; --spruce-ink:#e9f2ec; --lake:#6fb6d6; --amber:#e3a83a; --amber-soft:#2d2512;
+  --warn:#e08a69; --good:#6cc28f; --heading:#9fd3b2; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.band{background:var(--spruce);color:var(--spruce-ink)}
+header.band .wrap{padding-block:36px 40px;display:grid;gap:10px}
+.sign{display:inline-flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:14px;border:2px solid currentColor;border-radius:4px;padding:3px 10px;width:max-content;opacity:.9}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(40px,7vw,68px);line-height:.95;margin:0;text-wrap:balance;letter-spacing:.005em}
+.lede{max-width:60ch;margin:0;font-size:18px;opacity:.92}
+.byline{font-size:14px;opacity:.8;margin:0}
+main .wrap{padding-block:32px 56px;display:grid;grid-template-columns:minmax(0,1fr);gap:28px;max-width:780px}
+form{display:grid;gap:22px}
+fieldset{border:0;margin:0;padding:0;display:grid;gap:14px}
+legend{font-family:var(--display);font-weight:700;font-size:22px;text-transform:uppercase;letter-spacing:.06em;color:var(--heading);padding:0;margin-bottom:6px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+legend small{font-family:var(--body);font-size:13px;text-transform:none;letter-spacing:0;color:var(--muted);font-weight:500}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+label.f{display:grid;gap:5px;font-size:14px;font-weight:600}
+label.f span.hint{font-weight:400;color:var(--muted);font-size:13px}
+input[type=number],input[type=text],input[type=email],input[type=tel],select{font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);width:100%;min-width:0}
+input:focus-visible,select:focus-visible,button:focus-visible,.choice input:focus-visible+span{outline:3px solid var(--lake);outline-offset:2px}
+.money{position:relative}
+.money::before{content:"$";position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-family:var(--mono)}
+.money input{padding-left:24px;font-family:var(--mono)}
+.water{display:grid;gap:8px}
+.water .sub{font-size:14px;font-weight:600}
+.wopts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;align-items:start}
+.wopt{display:grid;gap:8px}
+.wdetail{display:grid;gap:8px;padding:10px 12px;border-left:3px solid var(--lake);margin-left:6px}
+.total{display:block;font:inherit;font-size:16px;font-family:var(--mono);padding:10px 12px;border:1px dashed var(--line);border-radius:6px;background:transparent;font-weight:600}
+.classes{display:grid;gap:8px}
+.classes .choice span b{display:block;margin-bottom:2px}
+.checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+.choice{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--paper);font-size:15px;cursor:pointer}
+.choice input{margin-top:4px;accent-color:var(--lake)}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg label{cursor:pointer}
+.seg input{position:absolute;opacity:0;width:1px;height:1px}
+.seg span{display:inline-block;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:var(--paper);font-size:15px}
+.seg input:checked+span{background:var(--lake);border-color:var(--lake);color:#fff}
+.seg input:focus-visible+span{outline:3px solid var(--lake);outline-offset:2px}
+.divider{height:1px;background:var(--line);border:0;margin:0}
+button.go,a.go{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:.06em;text-transform:uppercase;background:var(--amber);color:#1b1406;border:0;border-radius:6px;padding:14px 22px;cursor:pointer;justify-self:start}
+button.go:hover,a.go:hover{filter:brightness(1.05)}
+aside.result{display:grid;gap:16px;scroll-margin-top:16px}
+.tag{background:var(--paper);border:2px solid var(--ink);border-radius:8px;padding:20px;display:grid;gap:14px;position:relative}
+.tag::before{content:"";position:absolute;top:14px;right:14px;width:14px;height:14px;border-radius:50%;border:2px solid var(--ink);background:var(--bg)}
+.tag .kicker{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.tag .example{display:inline-block;margin-left:8px;background:var(--amber-soft);color:var(--ink);border:1px solid var(--amber);border-radius:4px;padding:0 6px;font-size:12px;letter-spacing:.06em}
+.range{font-family:var(--display);font-weight:800;font-size:clamp(38px,6vw,52px);line-height:1;font-variant-numeric:tabular-nums}
+.range .dash{color:var(--muted);font-weight:600;padding:0 4px}
+.mid{font-size:14px;color:var(--muted)}
+dl.facts{display:grid;grid-template-columns:1fr auto;gap:6px 14px;margin:0;font-size:14px}
+dl.facts dt{color:var(--muted)}
+dl.facts dd{margin:0;font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+.notes{display:grid;gap:10px}
+.notes h3{font-family:var(--display);font-size:18px;text-transform:uppercase;letter-spacing:.06em;margin:0}
+.notes ul{margin:0;padding-left:18px;display:grid;gap:4px;font-size:14px}
+.down li::marker{color:var(--warn)}
+.up li::marker{color:var(--good)}
+.fine{font-size:12.5px;color:var(--muted);margin:0}
+.gate{background:var(--amber-soft);border:1px solid var(--amber);border-radius:8px;padding:20px;display:grid;gap:14px}
+.gate h2,.done h2{font-family:var(--display);font-weight:800;font-size:28px;line-height:1.05;margin:0;text-wrap:balance}
+.gate p{margin:0;font-size:15px}
+.gate .hook{font-size:17px;font-weight:600}
+.gate .hook b{color:var(--good)}
+.gate .q{display:grid;gap:6px;font-size:14px;font-weight:600}
+.err{color:var(--warn);font-size:14px;margin:0}
+.done{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:20px;display:grid;gap:10px}
+.done p{margin:0}
+.disclose{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px;margin:0}
+.upside{background:var(--spruce);color:var(--spruce-ink);border-radius:8px;padding:20px;display:grid;gap:10px}
+.upside .kicker{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.12em;text-transform:uppercase;opacity:.8}
+.uprange{font-family:var(--display);font-weight:800;font-size:clamp(34px,5.5vw,46px);line-height:1;color:var(--amber);font-variant-numeric:tabular-nums}
+.uppct{font-size:15px;font-weight:600}
+.upintro{margin:0;font-size:14px;opacity:.9}
+.levers{margin:0;padding:0;list-style:none;display:grid;gap:6px;counter-reset:lv}
+.levers li{display:flex;justify-content:space-between;gap:12px;align-items:baseline;border-top:1px solid rgba(255,255,255,.15);padding-top:6px;font-size:14.5px}
+.levers li span:first-child{min-width:0}
+.lock{font-family:var(--mono);filter:blur(5px);user-select:none;white-space:nowrap}
+.upside .fine{color:inherit;opacity:.75}
+.steps{list-style:none;margin:14px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;counter-reset:st}
+.steps li{counter-increment:st;display:grid;gap:2px;padding:12px 14px 12px 52px;position:relative;border:1px solid rgba(255,255,255,.25);border-radius:6px;font-size:14px}
+.steps li::before{content:counter(st);position:absolute;left:14px;top:12px;width:26px;height:26px;border-radius:50%;background:var(--amber);color:#1b1406;font-family:var(--display);font-weight:800;display:grid;place-items:center}
+.steps b{font-size:15px}
+.steps span{opacity:.85}
+.more .wrap{max-width:780px;padding-block:8px 48px;display:grid;gap:44px}
+.block{display:grid;gap:16px}
+.more h2{font-family:var(--display);font-weight:800;font-size:clamp(28px,4vw,38px);line-height:1;margin:0;color:var(--heading);text-wrap:balance}
+.incl{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.incl div{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:16px}
+.incl b{font-size:16px}
+.incl p,.who p{margin:4px 0 0;color:var(--muted);font-size:15px;max-width:65ch}
+.who p{color:var(--ink);font-size:16px}
+.face{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+.face>div:last-child{flex:1 1 260px;min-width:0}
+.photo{width:120px;height:120px;object-fit:cover;border-radius:50%;background:var(--spruce);color:var(--spruce-ink);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:44px;flex:none;border:3px solid var(--amber);background-size:cover;background-position:center}
+.fromjeff{display:flex;align-items:center;gap:10px;margin:0 0 14px;font-size:15px}.fromjeff img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--amber);flex:none}
+.who .hi{font-family:var(--display);font-weight:800;font-size:26px;margin:0;color:var(--heading)}
+.faq{display:grid;gap:8px;max-width:760px}
+.faq details{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:12px 16px}
+.faq summary{cursor:pointer;font-weight:600;font-size:16px}
+.faq p{margin:8px 0 0;color:var(--muted);max-width:65ch}
+.closer{background:var(--spruce);color:var(--spruce-ink);border-radius:8px;padding:28px 20px;display:grid;gap:16px;justify-items:start}
+.closer h2{color:var(--spruce-ink)}
+a.go{text-decoration:none;display:inline-block}
+#report h3{font-family:var(--display);font-size:20px;text-transform:uppercase;letter-spacing:.05em;margin:12px 0 4px}
+#report p{margin:0 0 6px}
+.rep{margin:0;padding-left:20px;display:grid;gap:12px}
+.rep li b{display:block}
+.rep .amt{font-family:var(--mono);font-size:13px;color:var(--good)}
+.rep p{font-size:14.5px;margin:4px 0 0}
+.rep .nums{font-size:14px;color:var(--good);margin:4px 0 6px}
+.rep li{margin-bottom:18px}
+.coming{margin-top:14px;background:var(--amber-soft);border:1px solid var(--amber);border-radius:8px;padding:14px}
+.coming p{font-size:14.5px;margin:6px 0 0}
+footer .wrap{padding-block:0 40px;color:var(--muted);font-size:13px;max-width:1080px}
+@media (prefers-reduced-motion:no-preference){.range{transition:opacity .2s}.flash{animation:flash .5s ease}@keyframes flash{from{opacity:.35}to{opacity:1}}}
+</style>
+
+</head>
+<body>
+<header class="band">
+  <div class="wrap">
+    <div class="sign">Free · Confidential · Instant</div>
+    <h1>What's your campground worth?</h1>
+    <p class="lede">Answer a few quick questions about last season. You'll see what your park is worth today, and how much more it could be worth after the right upgrades.</p>
+    <p class="byline">Built by people who own and operate campgrounds. No login. No documents. About 4 minutes.</p>
+    <ol class="steps">
+      <li><b>Answer a few questions</b><span>Rough numbers from last season. No paperwork.</span></li>
+      <li><b>See your value right away</b><span>Your value range and how much more you could get, on screen.</span></li>
+      <li><b>Get your free report</b><span>Exactly how to make YOUR park worth more and put more money in your pocket. Right on this page.</span></li>
+    </ol>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <form id="calc" novalidate>
+      <fieldset>
+        <legend>1 · Your park <small>Where it is and what it has</small></legend>
+        <label class="f">Campground name
+          <input type="text" id="parkname" placeholder="e.g. Pine Lake Family Campground" autocomplete="organization">
+        </label>
+        <div class="grid">
+          <label class="f">State
+            <select id="state"></select>
+          </label>
+          <label class="f">Town
+            <input type="text" id="town" placeholder="e.g. Bridgton" autocomplete="address-level2">
+          </label>
+        </div>
+        <div class="grid">
+          <label class="f">RV sites <input type="number" id="rv" min="0" placeholder="e.g. 95" inputmode="numeric"></label>
+          <label class="f">Tent sites <input type="number" id="tent" min="0" placeholder="e.g. 20" inputmode="numeric"></label>
+          <label class="f">Cabins / glamping <input type="number" id="cabins" min="0" placeholder="e.g. 8" inputmode="numeric"></label>
+          <div class="f">Total sites <output id="totalsites" class="total" aria-live="polite">0</output></div>
+        </div>
+        <div class="grid" style="align-items:end">
+          <label class="f">How many acres is the park? <input type="number" id="acres" min="0" placeholder="e.g. 40" inputmode="numeric"></label>
+          <label class="f">RV sites you could still add <span class="hint">Room and zoning allowing. 0 if none.</span><input type="number" id="addable" min="0" placeholder="e.g. 0" inputmode="numeric"></label>
+        </div>
+        <div class="water">
+          <span class="sub">Water at your park <span class="hint">Check all that apply</span></span>
+          <div class="wopts">
+            <div class="wopt"><label class="choice"><input type="checkbox" id="w_pool" data-detail="d_pool"><span>Pool</span></label>
+              <div class="wdetail" id="d_pool" hidden><label class="f">How many pools? <input type="number" id="w_pool_n" min="1" value="1" inputmode="numeric"></label></div></div>
+            <div class="wopt"><label class="choice"><input type="checkbox" id="w_pond" data-detail="d_pond"><span>Pond</span></label>
+              <div class="wdetail" id="d_pond" hidden>
+                <div class="f">Swimmable?<div class="seg"><label><input type="radio" name="w_pond_swim" value="yes"><span>Yes</span></label><label><input type="radio" name="w_pond_swim" value="no"><span>No</span></label></div></div>
+                <div class="f">Fishing?<div class="seg"><label><input type="radio" name="w_pond_fish" value="yes"><span>Yes</span></label><label><input type="radio" name="w_pond_fish" value="no"><span>No</span></label></div></div>
+              </div></div>
+            <div class="wopt"><label class="choice"><input type="checkbox" id="w_lake" data-detail="d_lake"><span>Lake</span></label>
+              <div class="wdetail" id="d_lake" hidden>
+                <div class="f">Swimmable?<div class="seg"><label><input type="radio" name="w_lake_swim" value="yes"><span>Yes</span></label><label><input type="radio" name="w_lake_swim" value="no"><span>No</span></label></div></div>
+                <div class="f">Fishing?<div class="seg"><label><input type="radio" name="w_lake_fish" value="yes"><span>Yes</span></label><label><input type="radio" name="w_lake_fish" value="no"><span>No</span></label></div></div>
+              </div></div>
+            <div class="wopt"><label class="choice"><input type="checkbox" id="w_river" data-detail="d_river"><span>River</span></label>
+              <div class="wdetail" id="d_river" hidden>
+                <div class="f">Swimmable?<div class="seg"><label><input type="radio" name="w_river_swim" value="yes"><span>Yes</span></label><label><input type="radio" name="w_river_swim" value="no"><span>No</span></label></div></div>
+                <div class="f">Fishing?<div class="seg"><label><input type="radio" name="w_river_fish" value="yes"><span>Yes</span></label><label><input type="radio" name="w_river_fish" value="no"><span>No</span></label></div></div>
+              </div></div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>2 · How it fills <small>Seasonal vs. nightly guests</small></legend>
+        <label class="f">About what share of your sites are seasonal?
+          <div class="seg" role="radiogroup" aria-label="Seasonal share">
+            <label><input type="radio" name="seasonal" value="0"><span>Under 20%</span></label>
+            <label><input type="radio" name="seasonal" value="1" checked><span>20–50%</span></label>
+            <label><input type="radio" name="seasonal" value="2"><span>50–70%</span></label>
+            <label><input type="radio" name="seasonal" value="3"><span>Over 70%</span></label>
+          </div>
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>3 · Last season's numbers <small>Round numbers are fine</small></legend>
+        <div class="grid">
+          <label class="f">Gross revenue
+            <span class="hint">Sites, cabins, store, everything</span>
+            <div class="money"><input type="number" id="revenue" min="0" step="1000" placeholder="e.g. 780000" inputmode="numeric"></div>
+          </label>
+          <label class="f">Operating expenses
+            <span class="hint">Leave blank if unsure, I'll estimate</span>
+            <div class="money"><input type="number" id="expenses" min="0" step="1000" placeholder="e.g. 455000" inputmode="numeric"></div>
+          </label>
+        </div>
+        <label class="f">Who runs it day to day?
+          <div class="seg" role="radiogroup" aria-label="Who runs it">
+            <label><input type="radio" name="owner" value="owner" checked><span>Mostly me / my family, unpaid</span></label>
+            <label><input type="radio" name="owner" value="paid"><span>A paid manager (in the expenses)</span></label>
+          </div>
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>4 · Condition and upside <small>Check any that apply</small></legend>
+        <div class="checks">
+          <label class="choice"><input type="checkbox" id="c_septic"><span>Septic or sewer needs major work soon</span></label>
+          <label class="choice"><input type="checkbox" id="c_elec"><span>Electric needs upgrading (few 50-amp sites)</span></label>
+          <label class="choice"><input type="checkbox" id="c_water"><span>Water system or wells need work</span></label>
+          <label class="choice"><input type="checkbox" id="c_roads"><span>Roads need work (grading, paving, drainage)</span></label>
+          <label class="choice"><input type="checkbox" id="c_bldg"><span>Bathhouses or buildings are tired</span></label>
+          
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>5 · Your park's class <small>Pick the one that fits best</small></legend>
+        <div class="classes">
+          <label class="choice"><input type="radio" name="pclass" value="A"><span><b>Class A: resort-style</b>Mostly full hookups with 50-amp, paved or well-kept roads, modern bathhouses, a pool and real amenities, reviews of 4.5 or better, and very little deferred maintenance.</span></label>
+          <label class="choice"><input type="radio" name="pclass" value="B"><span><b>Class B: solid family park</b>A mix of full hookup and water/electric sites, some 50-amp, clean but older bathhouses, a few amenities, good reviews, and some updating needed.</span></label>
+          <label class="choice"><input type="radio" name="pclass" value="C"><span><b>Class C: older or basic</b>Mostly 30-amp or partial hookups, gravel roads, dated bathhouses, limited amenities, and needs real investment to compete.</span></label>
+        </div>
+        <span class="hint" style="font-size:13px;color:var(--muted)">Buyers price each class differently, so this sets the cap rate I use. Not sure? Pick the lower one.</span>
+      </fieldset>
+
+      <fieldset>
+        <legend>6 · How you run it <small>This is where most of the hidden value is</small></legend>
+        <label class="f">How do your nightly rates compare to parks nearby?
+          <div class="seg" role="radiogroup" aria-label="Rates vs nearby parks">
+            <label><input type="radio" name="rates" value="below" checked><span>Lower</span></label>
+            <label><input type="radio" name="rates" value="same"><span>About the same</span></label>
+            <label><input type="radio" name="rates" value="above"><span>Higher</span></label>
+          </div>
+        </label>
+        <label class="f">Are your summer weekends full?
+          <div class="seg" role="radiogroup" aria-label="Summer weekends full">
+            <label><input type="radio" name="weekends" value="yes" checked><span>Usually sold out</span></label>
+            <label><input type="radio" name="weekends" value="some"><span>Sometimes</span></label>
+            <label><input type="radio" name="weekends" value="no"><span>Rarely</span></label>
+          </div>
+        </label>
+        <div class="grid">
+          <label class="f">Waitlist for seasonal sites?
+            <div class="seg" role="radiogroup" aria-label="Seasonal waitlist">
+              <label><input type="radio" name="waitlist" value="yes" checked><span>Yes</span></label>
+              <label><input type="radio" name="waitlist" value="no"><span>No</span></label>
+            </div>
+          </label>
+          <label class="f">Do seasonals pay their own metered electric?
+            <div class="seg" role="radiogroup" aria-label="Metered electric">
+              <label><input type="radio" name="meter" value="yes"><span>Yes</span></label>
+              <label><input type="radio" name="meter" value="no" checked><span>No, it's included</span></label>
+            </div>
+          </label>
+        </div>
+        <div class="grid">
+          <label class="f">Sites with 50-amp full hookups <input type="number" id="fifty" min="0" placeholder="e.g. 20" inputmode="numeric"></label>
+          <label class="f">Months open per year <input type="number" id="months" min="1" max="12" placeholder="e.g. 5" inputmode="numeric"></label>
+        </div>
+        <label class="f">Your Google review rating
+          <div class="seg" role="radiogroup" aria-label="Google rating">
+            <label><input type="radio" name="reviews" value="low"><span>Under 4.3</span></label>
+            <label><input type="radio" name="reviews" value="mid" checked><span>4.3 to 4.6</span></label>
+            <label><input type="radio" name="reviews" value="high"><span>Over 4.6</span></label>
+          </div>
+        </label>
+        <span class="f" style="font-weight:600;font-size:14px">Check what you already do</span>
+        <div class="checks">
+          <label class="choice"><input type="checkbox" id="o_online"><span>24/7 online booking</span></label>
+          <label class="choice"><input type="checkbox" id="o_dynamic"><span>Higher prices on peak weekends and holidays</span></label>
+          <label class="choice"><input type="checkbox" id="o_fee"><span>Charge a reservation fee</span></label>
+          <label class="choice"><input type="checkbox" id="o_rentals"><span>Rentals or add-ons (golf carts, kayaks, firewood bundles)</span></label>
+          <label class="choice"><input type="checkbox" id="o_late"><span>Early check-in / late check-out fees</span></label>
+          <label class="choice"><input type="checkbox" id="o_pet"><span>Pet fee</span></label>
+        </div>
+      </fieldset>
+
+      <hr class="divider">
+      <button class="go" type="submit">Click Here to Show Your Park’s Value</button>
+    </form>
+
+    <aside class="result" aria-live="polite">
+      <section class="tag" id="tag">
+        <div class="kicker">Estimated value </div>
+        <div class="range" id="range">—</div>
+        <div class="mid" id="midline"></div>
+        <dl class="facts">
+          <dt>Net operating income used</dt><dd id="noi">—</dd>
+          <dt>Cap rate applied</dt><dd id="cap">—</dd>
+          <dt>Value per site</dt><dd id="persite">—</dd>
+        </dl>
+        <div class="notes">
+          <h3>Pulling your value down</h3>
+          <ul class="down" id="downs"></ul>
+          <h3>Working in your favor</h3>
+          <ul class="up" id="ups"></ul>
+        </div>
+        <p class="fine">This is an estimate based only on what you entered and how campgrounds are trading in 2026. It is not an appraisal.</p>
+      </section>
+
+      <section class="upside" id="upside">
+        <div class="kicker">How much more you could get</div>
+        <div class="uprange" id="uprange">—</div>
+        <div class="uppct" id="uppct"></div>
+        <p class="upintro" id="upintro"></p>
+        <ol class="levers" id="levers"></ol>
+        <p class="fine">See how much each one adds, and how to do it, in your free report below.</p>
+      </section>
+
+      <section class="gate" id="gate">
+        <h2 id="gatehead">Get your free Park Value Analysis Report</h2>
+        <p class="hook" id="gatehook"></p>
+        <p>Tell me where to reach you and your full report opens right here: each idea, what it costs, and how much it adds. Free. No strings.</p>
+        <div class="fromjeff"><img src="" alt="" width="44" height="44"><span>Your report comes from Jeff, a campground owner, not a broker.</span></div>
+        <form id="lead" name="lead" novalidate>
+          <input type="hidden" name="form-name" value="lead">
+          <p hidden><label>Leave this empty <input name="bot-field"></label></p>
+          <input type="hidden" name="details" id="h_details">
+          <input type="hidden" name="priority" id="h_priority">
+          <input type="hidden" name="source" id="h_source">
+          <div style="display:grid;gap:10px">
+            <label class="f">Name <input type="text" id="lname" name="name" autocomplete="name"></label>
+            <label class="f">Email <input type="email" id="lemail" name="email" autocomplete="email"></label>
+            <label class="f">Best phone number <span class="hint">Optional. So I can walk you through your report if you want.</span><input type="tel" id="lphone" name="phone" autocomplete="tel"></label>
+            <label class="q">How many more seasons do you see yourself running it?
+              <select id="seasons" name="seasons_left">
+                <option value="">Choose one</option>
+                <option>This was my last one</option>
+                <option>1–2 more</option>
+                <option>3–5 more</option>
+                <option>As long as I can</option>
+              </select>
+            </label>
+            <label class="q">If you stepped away tomorrow, who would run it?
+              <select id="successor" name="successor">
+                <option value="">Choose one</option>
+                <option>A family member is ready</option>
+                <option>A manager could</option>
+                <option>Honestly, nobody</option>
+              </select>
+            </label>
+            <label class="q">Want to hear a no-obligation offer?
+              <select id="offer" name="wants_offer">
+                <option value="">Choose one</option>
+                <option>Yes</option>
+                <option>Maybe later</option>
+                <option>No, just curious</option>
+              </select>
+            </label>
+            <p class="err" id="leadErr" hidden></p>
+            <button class="go" type="submit">Show my free report</button>
+          </div>
+        </form>
+        <p class="disclose">Straight talk: I buy campgrounds myself, and sometimes I bring in a partner buyer. Your numbers stay private and are never shared without your OK.</p>
+      </section>
+
+      <section class="done" id="done" hidden>
+        <h2>Your Park Value Report</h2>
+        <p id="doneMsg"></p>
+        <div id="report"></div>
+        <p class="fine">This is an estimate based on what you entered, not an appraisal. Costs are typical ranges; get local quotes before you start.</p>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<section class="more">
+  <div class="wrap">
+    <div class="block">
+      <h2>What's in your free report</h2>
+      <div class="incl">
+        <div><b>Your value, explained</b><p>The income, expenses and cap rate behind your number, in plain English.</p></div>
+        <div><b>Every upgrade, ranked</b><p>What each move costs, what it adds to income and value, and how fast it pays back.</p></div>
+        <div><b>What a buyer will knock off</b><p>The repair and paperwork issues that lower offers, and how to fix them first.</p></div>
+        <div><b>Kept private</b><p>Your numbers are never sold or shared without your OK.</p></div>
+      </div>
+    </div>
+
+    <div class="block who">
+      <h2>Who's behind this</h2>
+      <div class="face">
+        <img class="photo" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCADwAPADASIAAhEBAxEB/8QAHQAAAgIDAQEBAAAAAAAAAAAABQYEBwIDCAEACf/EAEMQAAEDAwMCBAQDBQYFAgcAAAECAwQABREGEiExQQcTUWEUInGBMpGhCBUjQrEkM1JiwdEWcuHw8ZKiFyZDU2OCwv/EABsBAAIDAQEBAAAAAAAAAAAAAAMEAQIFAAYH/8QAMhEAAgIBAgUCBAUEAwEAAAAAAQIAAxEEIQUSMUFRE2EicYHwFDKRodEGQrHBFeHxI//aAAwDAQACEQMRAD8Aw1Q5cxqlhqY+6hK3iUpUfwjPSm6Zq9+ywV2y3pA81vBWOnSgGqdQxrxquC7JiJDTa87T3qTqCHLuNsl3C3ww3EZGcgYOBXz5gCKxYP4yTC9vhg2y2xy+RVRAkKfUTs29SaV9ZWBdmlCHIaX8Wnkp9qsfw9h3qyWdnUTURLoUAUJUccUtajv0m6a8/es9pkKQAPLPIwKYF4bn7kdPG0HYnLjMOaahm0aGVdRdVMF5HzMA4J/1pGsk564agK0JUjycrCkj+tQ9b6kkz5ygk+UznCW0nipuhb4xZkOBxtK1SRgkjkUA1XV0sx3Y9vEpzKzDwIc8QrzcbzaorspCFlk7U8cn3pEuMVLzDaHXFbz+FPpR+a+5KkKQCfIByB2FDHEbpQO0OKzhIHrRqsomPrIJ5jmPGlEzoGnG7Uw+1vkHCvUA1dfh09GsVjTbnnjKUE5dQPmKc9ftVe6S0vAtNmXKv8oMS5LeWcq5Tx0p28PBbdOsiZMcMhclIC5CuQR2Fea9fGqJBwM9SO56n3AmhUpA3lV+IV20WxcrqzZ0JRMWrzEuN8bVnqM+ue1V26ZsyGZ0tSlpT1JOTirO/aK0hAt12Z1Ba2UNNz1HzCMBO7Gc+2ara5y7czCMeO6/IUE/xCghKCfQZr13CtLZeqilSexPy9+kTvwGPPHHQeihqyA7OhIUppr5cZ/Eaa7HCsOn1MQ7ra1tS0uZCnB+IZ9ap+xeKt10za/3fp2Y9CWtZU6mOEuI7dVn+g70JuviJfLgkvXCbIlyB+FTjhJ/6favVUcEsq5SGG2eoz+nSKvYpyBLr/aNFou1lgPWSO38a0ob/KwVBHfIHOKleEse3/8Aw7ciTvh4k1aVErfcCDjnk5Oa52haumeahch0javqPT8qmuXuOJjrSZikNcL2qCACk9s4z37+lPXaB7FID4JGM4E5bQBgjvLK0xZJFx1TKtMR0JfKlFtwfzDPUHvWrVuj7xZ25Mi+SSvZwk56ilvSWq7nZZ4XHmKQtsBbW1Q+VJ9CCRj2p9v2rZerbI8xNdbJUjnaj5+nUAcH6V57V8A1S2BqGBHfOx+/rGRcjDcYlb3G2OR7I1dW1pLbigAnPIzT7oKy2pcJxUpQkPONZGP5eKTU2x59tEODNalx0HlO/CkKIzgpPQ+1WN4PaSuMgTJDrpbQhJSMHvj1rN1teo0q/EMHO2ehzLIFePPh5oPR71pccfSl14jCwVZINTdDeH+lblcZDzTSHGIrpQRn8X1NA/DqBJtdwm/FOLSl1ZAKjxj/AEo8lbmm/MjR3FETHSUFvsVGkdPxJKXrDpzcmfmc/wAS5qyCYXv/AIeWj4hS7e6iG1sO4Ixz7CoegxZpemZ9lenluRHcU2t3ODx0IP0pp0pZWFsYnyHHV/i2LV0z/Wq019Ag2TXchDboaiSGN20ZHzDr9e1e6pap0GoVACwGc7bf+zOsDJtF66MWxuU3a7Cr4qSl351dd2Dnnt96UP2hNPXFi1W+9zkJbJUEYHuKtPwps1nh2646nuryPMVu8pSlA/J16dqrrxj1rG1Tp1Nv2DDb2Qr1APB+9ZjaPTK41Fgw2DgD77wtVrA4mf7KKorc+6OT3EJaKQBuPU4PND9QtRk63uTrT6DCQ7uTznPHNLuhJFrttmuLsuU426U4aQgn5vyqDAh3O6S1lkOFPVZPaltXZZYoqYgqeg7wpYcxIjZqTVyJhjxYaENRwNqlDrQ+3X6Nb4suOhjzVOfhUag2e3+VJW3Ib3ndgGrFheHbc23GWy+2lO0qJJ68dPpWTXofXArqXm++84uRuxxA3iPCtVu1tZ0h8IYeXh4g9KsHXUB5rQrj9pcDUHy8uK/xDFUndIsmfq2D5zq1lxYOFHO01dXiIWB4Wm3fvEfEBIAbSfxdO1LOtaGhTufP1jYyQT0iQdTXj/hmJb0upZiAAJPcjtStq9VrRtXGfcW9ty4o+tNF1t9vlJtcNqQEtNIBcBNK2uY0ZMtSLYkLZbGFK96HS6+pkAjr9mL3AnqYmoWy5KQSC5RHehpSj5YJxwKwiJahOJW6gE9QBU2JGRObenlXlpQflBHBpl7MwAE3Wxm6hkIIS2mSQElXbNbEwzab62w9JC3CpKkkc85qZdJbr1vgvOoKA3wAnvWiNAW5eUSZJUgcKCVdVCghyx3h0T4sLGmZEuWo7lFYnzyryiPLT0SBTPrbxWsWlNNS9NC3tXG6pR5a0Bf8JgY6rI5z6JHP0qvfFTW8W021NqsrJZuikhTjihjyU46/8x7Z6dapSXJccOxSlLWs73VE53E1o8E/pz8ZyarVjCgHC+c9z7e31z5rbqPTyqdT3jVqvWt31TIbkXO5SH246A3HZUrCGwPRI4oMbq+mM4wHAkL4KsZOKErVtAx0rWVKXnBr6HWiVIEQAAdhEDknJkkvlvalJGwdsVgqSjJUQSPQVpJCU4B5rxvfnIQMepqxJnAT7etw5bbOM+maJBcIhoKkSGg43hYSeh5GfpQt1bw/mP2rwrWUNrUhCyCcEiqEywEO21qMJTbqZjv8dG1KVKztPX8qPwpk+GoeYQtsHgpP+lIrKtzrKjlCwvAAUAMUYt12kh0sBwrx2URzUS4ljw7tCm71Flpb6k7FKxhRH1+3ejOmtS3SxSVC23R3bjC2HDtUR6EHhX161XsN5iQNwc8h7uRU/wAySoEvJKlpxtcT3+1VdFsUq4yJYbby6dMXd6/LciSLn8O65lTYUMFRxnH19qJWxm82+YiUqR8alKtqEZziqNg3R5SUuknLfyuDuB2V/wBavjwe1LYbjYpUac+hi4xkeay6pYAkI6Ej/Ok8KHuD3rxPGeCLp86ikZT+4eB5H3/01VZn4T1jhcLrc7HbxfLk6gA8BrONoqovGPUki6y40susqSU8JSeR/wBK88T9XG7xUwFyS6pC/wALfCcUgCO7KkNurbWmOkfMTWcljV5/+hKHzKueY4AhOVLu0a0w0yLmr4Rw48lCu3+tDNWW1lqxNT4z52uKxj0pu8PdFP6omraQVlpBPlhXIAoZ4y6WvmmYCIktoNxg5xjnIzwa1qFa4izBK+euMSiKFOJ54KWH4+fIluQTORHRuKevOKbNHoZu93u7bDHlZJbS2E/MSB0HpUH9mjWEHTn7yYn7Epe5ClDvjFWT4APWOTqHU15leUhxUwqY3f4NoyffmtKvRadyrc2T3HfM53YMQYrXHwwusOxv3R10tKbO/wAs8EjPvUDRVt1BqJHwkee5FjoJBycAdevr9KvW+22VrmWgw5pi2xg7XABkumqY8Tbbc9CX/wCCtL7qIUjCvMT/ACqJ5ye2TXW6KrSt6ighQNwDvBBi4x18St5byheob4WpTriwkIHUKo1ryJcLe1FmznHGt5HyKNDfEaKdM+Jrclsb223A8lH8vBo3r/UDWr41ndwEumQ2jyR3yef0ry7Bi1DruhByf9TRKLjBhnT2lXJUJm+Syfh+FEK6Yof4gCPdpLcCzMIjtAYW6nGM1d71tjXDQ6rWl5EZwMcjpjiuatRy37X5tvZdCghZBUk8nmsfSM99hbO/b2Ei9RWMdjNMmyxYspEKRLSVITlSs9a2sW8W65RW3lB2A6sZ2/60qyXZEp9TjhUeOpNNun58WPYlRpjDr0hwYQtQzt+lPW1uqjLZPQxVSCekuC86QtcTRyXYzSHXXwPL74J9DVH66nS7ddWlSUlp2KjdtxjdjoPuaarJ4gXaCIsVUZchuMsE7zxj0pG8fNXM6j1Cw4xFQwtDP8XB6ntROBaF21YRhldyTn76w9ly4yvWV1c7jJul0cuExZckPOFbqupz6e3TGBUNCySVHncc5rxB5WoHPy7f/A/OvEYQ2Aa+nJhRgDYTOIzM1nJGeAKxLgBIA4rEhSu1ZtsFXKs4FX3PSRgDrNRUo9KyCnscFR+lbXJMWOAFlI9B3NZsLnyiBGgrCT0U58o/3/So26Znb+JpablqP8NDhJ7AURhsobQf3g4wy4khSEFRJJ9DtPHFS4Wlb1MTmROaiJPYAmpTfh9FWQZOoZQc9ENpAriT2EsBNSmNOvk7Li5HfJChgnaD6c8jp+tb7vaoiEfGMNy5bauUOMbVJ6fzY5H3qY14aW4oCkaluSVq/mLKVCtkfwyvkZz4qzaqjqcHIS60po/mkn+lUJI7SwHvFX95OpIKmVNKHRRzz9aKQtTEAeanIT1I5z9aM3BrVdtjkaj0ui5RAfmlRAHCB6naM/mKExrfp69LWbLJDbmP4jCztX9ADXZ8ScQmxeoy3A4w4nK+FDHSptmuzYl/BRj8O4CVhOflUrvg+4yCPcUk3CzTbe6pxhKloSeQB8wHuKzkyDH+EnN/MhX4ld0nv/371VsMCrDadiWhBDjq/iUsqcB5/CeB7+lTLyJLTbMVBJDpz8o6U0eBk9m5aYulvRES/sWna7jlDSx8pPsDkfajusdOW6JerVb4chtO5JLq85IFfLOIOdPq2oYdCcfLGQf0ji15TmEN+DLE6BIYYiOIda27lLx+E+n0pc/asuU+R5LMshLSSAAkd803+GEUWqbcI7UsqDf8RG7qf9xVZftCauZ1HDZa8pCHWXSleDyMHmi8I1lwu9NWPKTuO3Tr/PmFZFwCesW/B2wnUEiawp9DLbaM5PU8VYPh1ZH5km4twHloVFcLalJPBNVFol2c0t52CtxBSkhW09RV3/s8XZNvYuabgggOLLhX9RitLVVVtexssIG3TtIJ32EsnSF5f07CdtzzYVgFfmHjmqf1xeL7fpk2M618THKztdQngc5wD9asDXL7l0tJctRSho/iWeuKXbde41ttbduEQyMq+ZQRnHes/U8T1dRamu0OBsPl7n9pUVIcMRiIGudH6sN7hz73BkOQlOJQqWEZQnJ7kdPvWzXFst2mtU2KTBSHSlSVqQO+BXRwnJvGmZGn3FR3H3my3lXQg9+KQx4N3uVq633aVMguxY/42zu3HjtxitvU6GyuxBXkqqtt58QiHzEDW2or7cZCTFQ7EQpsI+RWDj3xQy3eHk+bZ3brNkhDSU7snk1c2tNFTY8wuRI0dTSk4/H0x7Uu6r05qD/hJUWG+dyxyhChzXmmq1aKta1lMnxmVZF5izbyooFojzprTMRXmICtqzV0MaPtNjhxbmWUS0NIBW2cE9P1pWb8PLtaLRCU0VNyZCxnjpmj0a2XKFeY1tnz3UpdTggnhR+9KaksWxkjHaTWvKNxAx0/G1TDu95jNJt8RgKUUkAEJSMk+3Arle9ShKnPyvm8sklOeuOw/KulPFtq76Js93ZRctsOewptKSOu4YIH2JrmR+QFlWAOmEjsBXsv6Uo5a7Ls7HAH06xbUHcDG/eR0qUUqwnaN1ZNI3AFROBXqEhoArI9cVBm3Banfh4iQ47j/wDVP1r15IXcxbc9JNky2IqMrUOeg65/3rBpE2aMqJjMn7rP+gry3W4NrD8jLzx/mI6fT0oy2lOemMdqIoZusocDpMLbbWG17mmhnu4rlR+5pkglLKQlABPUqxnPND4aCrByAlPOTWudf4sDLcVPnPnocZ59quSqDfaVALHaMjRWUlbpCEj+ZSsDH3rW/qCyQsl6ap5Y/lZRkfmaRpTt4ua977q0JPRJP+lYtWVSsFeVE/4qz7uKVJsu80qeF32bnaOivEGxNn5IcxffKngKlxPE2ypWkrhzUgYzh1Ks4+1JBsu1HDY+wqM5Z14JCP0pUcWz2jR4Ow7y8tO+JWlZAShyWtgnHD7W36/MMipOoNHaS1eymVHSy1JXyJkNYSsH/mHB+hrnh6A9HG4JKfpW20Xu7WSR58OW9HUOiknGfqOh+9MV66qzrFbNFbV7x/1Fb7/pBwG9hV1tAISm4tJw6yP847j36e4oTMgszYDxtykOxpCCtoo6eYPT0J6Ypn0x4qRrlGFs1Ey0kLTsL+3LagRjCk9s/l7Uu6stjuiZYvNi/jWKSoefGzuDJPQpP+A9j26U1nbPaK945fss6kRbtSLtz73lx7jCcZCVc5cSQQB9wfzqxLHAtk/xRKbncnENJP8ABC19TnpVJaaahv3yFcrS6UIelocO3hTK1EBX25zj3NXFG8PtRv6pWx5h81vaS4eo+leB/qamurVC1mxzLj9D/wBiM0lmXAGcGO3jNZLjbZcC72GRsSUFpe08YPc/eue9cueUpIfCg8VfP7mrK16jW9omi0TLi5JjABaSOoHpVaa9ZUpTLxyoqHOfWlODoodcEEdoVzl+kff2f7QxeLfeFOuIb2I4zjPSnrwFk2/F2tstHnvB5aemcpBwKqjwhhXaTb7k7bFqTsbO8A9eKfPA2YYdyk/DtFyW6ohSSOlMauhXe4nf8u3iFU4jbe7Vc3lyERAuNb0q4T60XsNtZtOli5KZQXDk5V1/Osdd6kcZLMEMKZe3BTnGBjvQi93CRekRYyH/ACWiQCM9ayHpJQHGAZwIB94R0d4cwpqkzbfqpakg5GNpP6GrEZ0bcm2wG9SSU8dQD/vXGenvEu4Rb+1bIbS45Lhb3Nrx09quiB4zXCxsbbhIWtpHVShj+tfQOdGODtA/EBtLSvOg9RzGVJa1e6FY43oP+9VxeNC+J1tmgovvnsD8Kincmnjw98XrRqYpaTOjJdUdqUrO1RP+tWaXWHI/8ZTe1Q554o4UL7wRJac4WKd4hyNUxrVfnWkxWDvbeQ1wr2ov4hXqMxJQ6tQdmtkBsDnmrmTarNIdDzZbUrthQNApmhNMSL4Jkptpxz/Ao459ax9fwn8VeLA2wHTH+5ZbCFxOR/2ndQ3S73ayWmSQ2GYfxC0JPBKyQCfsn9apmRsj4+b51jCR6J9fvV+/tiWeBZPEqIqP+F+0NHGc7Nriwfz4rnSf8Q4svAJ814lLQPRI7n7Ctjh+nGk0yVgbiBc8zEmD5kt6Y/8ABxTx/Mv0oxaoLUVkISOTySe9eWu3oitADlR5UT1JokhBSnoCa0K0x8TdYF27CetgeucdqmNoS235jhCUp5JrSjy2my48dqE9aGSpLtzd2pBRHT29atbetK8zSKqWublWb5c6RcF/CwRsZBwpdFrLYwkBQa3KPVajkmvbHbeAUhAx2pxtsV1tIwkHHoa8xrNc9x67T1ug4clQyRkyBGshWBubA5oiixFHIBAPTiikfckpK/Mz6bRRpmKXUYKikY6FIrOLmbiUCKqrUgI+ZGQBzhPWtC7Wz1SlOfpindNueQnKlJVnoQntQ+bDSyT+E5Pof96pzmWakYiJdLW0W8FOCexFJ1+ghtOABj2q0bm00UdwehByKT73bwtRAFM02EGZ2qqGNpWikuMOEpPSmzRerxHYXbLon4u0vAtusr5KAepHt7flzQm8RPLKgRjFLDi1x3tyfXketbmmvInmdVQI7RzJ0fqdptiR5sB5QfhvA5DjeflP1B4P0ru/w8uD97uovKHGi1KiNOgD/MkE/rn8q/P6HMbudrRbn14ShXmxFq/+k53T/wAquh9Dg+tdPeDWsZlt0Zp4x7c846xHU2+r/FtcVx9un2rP43wz8eiFTgrn9D2/YRel/TO8tzxSlxoK1Jfh+a9IGxK8dKpbxd0h+7tMRLopRC3FjcnHGDVi37VEvVT7Upu1KRGa4KVdc0qeOV8claYhW5UdTe1aSc9gKytDwVtOVs5gDnceYdrOdukD/s/N3Ewr0IITs8s7t3rimXwPk/u+7XCY8ykkOKBx9eakfsr2K4XO13pcZUdmPvDalOAkqUU9AB9auOD4eRLTankw4cN6SvJUUp2lZ+ppuzhr2tYcjDY/aSHAHWI3is3Lucu2GLH5fWBuArDUulrlCtMciC618yf4w5SPc4phukl+E8yLla3WPhyCgrSMceh6Ufteu7LOaTEujCyV4SkeVvSr64rl4RWtaqX3GZQsSSZ+ftrJa8RkqIPloknJ7VafjIpl3R7YbZIBxvVjGelVgxIx4kfD7QECVyPXir/u+nv+JrKmFLT5LASNuOM1qMuGBlQfhM5nZub8Fba4Tq2ShQUCk9xTYjxO1mWUj/iCYEgYADqun51Yo8FbIoYL7n/qNb1eCtk8vah9zp/iNFGe0GZbngBeyty3zLrNUUPx1ISp1ZI3naQefvV4XCBa7m2DJQ07t/CsKwR9CK5nsFnuDP7u0/ERlDZyF98DFNWsYU5MUOx749DEfAW0DjcfTHU1DOVbBG3mXROfYdZSP7ZLMSD4hxrXCmvSPLgocdcdc3lAUtRCc+gH9aSPDXRCtQW+XeZiSEOMLbtyD644X9yKK+PMFD+p7XOeRcpMaUhDc5Zb5TsJASD6EHr707aM1FZ5RMSITGSyQG4607ChAGAAKBqdS3pA1zQ0WkAuxeMe0o7yyhRQtJSscEeh9K2J8tCd7isJTySelPXidpSYzeJN7t0Zb0CQouqDKSotKP4sgc4JyQaUYWk75fW/iFxX4VuRyC6gpW8fYdce54+tag19XpCzMzW4fcLjVj78xany1T5AbaKg0DwPWmLTtscWR8vH0oxbtJwo6wpx1sYP8x4FPNms0RISEyGQAO5FYOr1jWnM9DodAtQ3O8FWez5KP4IUO3BpjjWU8KCFp9Nvaj1utrCUpUXmiP8AKRRyGyztHluIUnpWWzmegqRRFNFs+bJCkkdD61v8lxtslP48cZFNjsVsqSkgZ9q0rZSVPgAEJTjOO9dzZjQAi8fiHGQoqGfTHFQX4r208rJPQE01IYbSw4kIJ2YPTrXs2M3sSoAHp96jIkFRK7uFvkFG4pKknj0pYucVaFqJSRirWuEdZjrOQOeAaU79DC05Unkcmio0Q1CgypNQxUuAgcECkm4Q1ZOBVoajgLbPmIAKf1qHaNPia8ha0DaecEVpU28ozMDU08zYlZwkvRHA08kpDg3Jz3FdRfszX1m62t60uISX4aSpWf50KOQr8+D9vWqG8VIaIN4heWAlKkqQAPYiiXhHdpVn1rBLT6mEyVfDPKHZK+OfocGtSl+dN+8xL6+ViB2l+eLF9n6Zs5kW1YaSp3B47k1VadV3jUcVQuTwWWzxiricscK828xbtObkJ3ZT81JPiDYrXY47CbelvKuFFOKiyDr2M98Mte37R9wbRaJBQiU6lLqCMpV25BrqC0+LkNDjLN8hqZC0Al9nlI+qev5VzP4Ex4MzUbwntoWlABRu7Vd98tsSc7Fah+Vv4GB39qX5mU7dIxyhtpYb/iToWREUX7kh2MeFb46lJP2xSLqoaRfcTK0qkJdcQSUtBSU9ODtPT7UMviYNjLcK4sIaCxuGQMGo2n73aJdyMeEpClITyEjtVnJYdJCjlO85DfUU+KZKc7TJBH5V1fbVn92Mf8g/pVH6bsdhv7yLwlstSRhQUTjJAqyImpHY9sVuiqKI4xnHWjgAneBJONow3q7R7Swh2QfxHAFCJmuIMVlLjiMpV6VVviRrtq+MswYgU0/nbg8EGl3TFrudo1XGYukl2REkN5IWokJP3q4A6Su56y+tKeIVpkaki+W8GFjcApfQ8dKl6s1A/JakS4i2nnFyfLbWeUlfrj2qpIMqyNav8iNDeklrJUEJOMf0p+hIjXBmxx4bJjMuuuyVIUCCnk5yD9Ky+JuyoRnrgT0X9O0LbqQT/aCf9RqiwDMgtC4MNhbrQUCBxu9qpbxFssi1rk3KM2lttJJykf3a/Q+x4q6LndYkN6M15bylLUlAWFcJB46UvLQzcvjmXW0vNrcWhaVpyFDPQg9uP0rK01xQFuom1xOj1mVeh7SqNJa0mXOdHtDEuQ2pKlB9aBhSUIHzFJOcZOBntmnKXZLPNUPMTKdUr8S35jqjn/1YrTY/D222LW7FxtrEkMSI0j4grd3NtqKkbQM9M/N69KZrsmHCQVr8tzb0KFDJ+1Gu1CZHp9InptLZyn1tz+0BM+G+lFN5choVuOeXFZH61ouehNKNtkx7ftX03JkuDH5KrB1d/uhcENYhs5wnCdyz7+1DNRacuykulMd+WlTASFLkqUUL6FQGQPfmiadXtbBfE7UGupMrVzTVI0hb4ycNXidGcV0Sicv+hJr5mBqCKsfu/VU0beEpkNIcT/Qf1rXY7NAiqlu3S3nzloSGUA/hV65zxUi1Kd+ILLYcbS6cJChlOf8ASi3IUOObm+kFp2FgyUK/Uwyzq3VNiTHevrNvmwFuJbclRlKQprJwCtCu2TjIPen+33q0TIClw5sNe47lfx0Z/rVLa7nPyIyNOxisPKcb80rSFIVlYIGOpGASfpin6Po3SkrTrS5mnIDr6kguLUyEqyfpzStlSgAtsT4jmnvsLsqHIHnzCF/1dbbOw4484npwE8lXsB3NLE/Xd9kRdtv0vI2/yuSH22v/AG5Kv0qudaWyBY9VQXYMJMaI28lQIKjzg4GM+1Ho90mSQhmI40kEDcs+9FXTKFDAZz5i762xnZWOMeP+4Vkal1o/GLYtFvb3Dr8QpRH5JqNJf1q8ykrh29O4clS1j/8AmgsHU16JR5EmOVBa8trZKsbcdTxyc9vQ05wtR3FNiaulxtKPhnNw8xlfAIOOhpi3TW0qGKDEWp1lF7FfUOYm3AanSD8TAgvJ77ZBH9UVvs9ykwmFPzdPzm2EAqLjC23gkdycEH9KbI82BdWlPRljaDhSe4PoajyYSZDOxQAY2krB6EehoSODsRLW1EHIaVhqly1as1dZoTMkRm1PHzJDrZCUpWrgEdfT25pl1V4aajhX2TPhuIuUENB4XKEkhIz3IPKVDvx70r+IkFnTzzUiO2kty1qS02TjaBgkD05CcV0r4bt3LUGkJQlXBi2R5RSHkbMnBT0SSeOp/OmLtU1FamvG/mZraUOLGf8AMuD+spPw9b1N/anW2p0+LCOXHU5x9M+tZ3u7NXXLzRfA54czwe/WriupkaDtki26ZH7whSTtWoIKlJUeuCOtVR4kTm2Vx4y4PwjyU/xElODVKdc99pGNu3n6xDkCyV4SyHmbu4UR1vJI+Yp/lq0YM+R5pVBDrj7StyEpOSD9KqDwt1MbLcJAYbS4p1GCFe1Wl4D/AL5ueqZTrSWwACVJUMp5NIcT1F9bEqcAYx7n3ll/MMRnOo5upVt2i+2Z3Lah/EDZCgDweMdaE6l8P79a7sLlollS23QA4HV9znpxXQcWAgPNuvrjpeSnCgkCpr8yFHSd8hlOO2RRhdecOHC/fzjJAxg7zhzwl8ItR6itjLn/ABKbW/jIZKQoUzvsXDTd9Vo66Px5a2kha5AOApJz+teIZvMC2xkPiRGlNJwggFBx7UBumnrjqmRuaMw3E/iWkkqWn0PtTod1Y3Cz4MdDjH6xQqpHSFNc+D1vuLbN+tF4YRJbUHC2BwQOcdan6BhW7V+o2rDNb+HEVopcdPBJHHFCbJ4farg7SmHPcQnsoGjcXSOpDcjKVbpsUBOP4aCCfuKE3EqDWV9Ub/r9JAClgcSLrO0QdA3GcqE4h6OkANrxuVk9jRjQ7i5el409xIVI+FfwUjoCv/apETTsiRGdjXPTU+SeSlamycn15qZpqI9Cgssx4bkdtl5QCFp/EDwofSkLL6rE5FfmPzm/wKwJquvUH+Zo0Yk3S4qU+PNaip3e4NRrSrfLm8NoQHSUhHIAJJ/3OaZodpVY72uZAaSmJIbUl/noo8g4+opUsMSVDfnuyX0upcXlHY45/wClDBUIQPabuoLNcrdt4zRmx5BXxhR4yaC3GIyy956GUYBwkLGFKJ9BTBbuR834UjOe1SnISJCd6wnzFDgkdvYdqXHXEMEyIsx/KI81hTKCn8aVHp9+9ap7skt7kqYUD3BPH5ipkvT/AJCi5HdWkHrgkChjlrmq2kvHaD0JzxRAN5PIwHSBJ9tckuBRWkk/4R0rKDYFNqBdeVvPCEA0QkRZjTgbaPyk9hlXNErdp+e+rzH5DnsAdufv1o3OQOsCaSTuIAVpldxvNte8xKWLctxbyQn++cIwkZ9huz9acJsTy2ghPIUPmJIHNSGmvhSlnYlISMYQeAK2S2mZDBCQo+6T0rslyMwtdS1g47ym/EywuXFppLQQDHktukr5CkA/N+lQ48VplYbEVvCeBtTjcKedRBLSwnadvOQR1paLb7b39wVtfyeoptLCFxMu6geqWxvNkSBaJiUokw2WyP5inBP3FFJNtZciNsed5kdofI2T8o+grRHecIBQgDn8CxUn4njPw6Qf8oIz+VDe607Z2hEqqG/LvAyYDUKd5sYBKHPlWE8CjfwyU2V3jgkDPXjNfNseYv5kK2nokp4/81PDSVwyw2vakEFQPXjmqqfiBME6fCdoq3mzNS8XJxLSxFYKGmlICiCVgqVzx0GKtLR2p7LpjQaIMq1u3K5vu+YUJbBCU7QByenQ1XtkfXcGpRWlPypCSlPTpV+2/wAK33IbDokttOKaQVAt5wSkZ/Wi6elbrCHOMQfFLvS0ion9xz+3/kRblrW7S4Dka2aWbjtPKGxbq0/KfUgCki76Lm3PUrV51P5boykhtBwnaO3vV4Xjw9Xa4Cp0+9JbjM8rO0AJHrk0oaoOlUMxdmqm39zgSsh1JCR9q0hpKwfgOPpPOG1iPiH+Il6g8PrdqO5CTp5DVrCEbVKwBuOPasdCt6i0LLktIlNP/N+Puatm2WjQM52PAh6gZclPjCEtPJ3E456UzMeEdhT/AH7z7ueclZof4RCOVmJHylja2cjEru+alkXO3xn4wdRLGPMSHKmRHtNzYBkXrz2nEDkKWef15p3d8KrAiS2pqS82nunzOtDrv4aWGdOaaauTiGWz/EQHOVH60u/C9MwwSfptJ9V36gQZ4vS7VdbGzPtbQkGO4FFbae3ekHTOubTarrFlpYSohW1Yx1Sat+XqvRqbDIjxm0AKbUNuzAPFcyNSIqJ739lCm0uK2Ej0ORVKeGVpR6Z+IHPt1+Uqz/FsZ00zrtEohFu07cJJUAQUsYSfueK+dvmrHp7MNnS6Wi8CoLdcGAPfFCtJeJkZVgihEBDakICVEkADFRb54qbbnCdacYSEKO8Z7Vw4FQRkqf1/jEg3AHrHL/5s+GcbXa4u4jAKV0m3Kw6lhW5Mi4R2VRo7pcUtH4khRA59hxW6P4rOXK4NQLc627IeVhCEJyTTG4nWMxhxqQ0nynUlK0FIwQRyKIvCdNWDyqAfnD0apq7Fcb4iDId3pcBRkY3Kz2FKwbyCokD296er3orUKLc+4lYQwhJWvA+fakZx6dutI2wqbV9KzLKWq2YYnq11NWo3rOcQ5BZzDQhRPzEH7VKLmccEq6DFQIpWPJyoYCantBJSFFfNBrwDkx6vea5DLzrZCiQCexqK7bSUcvYAxnPWiD7wQ2SONvOTS1erotKVbFEn1orOO0YAMzuctiAnEZvzXj8o7nNaVTLgGUKSMrIyc9B7AV9YYDj6jKlgpWR8g9M0Ukyo0DY3IjuKzxlKCr71CYzloN2ztNCHX32EjZ/EIwqvYkCQVqKX1t4GSk4qdBlQnCS2AsZ/CRg1NkyoiAClrYfpRVZRB42wIlagtrq1qWpW4Dk5FAG7ghmWY7rA8tPBJHSn68PsqjHnA9O5pRlRYzxdcVtHy8+tFDhhgxO1SHBEzENl9vzWMKSfSs0W8jG35cdag6bccYcMfkp7fSmf4dSk5SepHahc2+8aFYIzBL6C2No5IHJ6VFkBSknYnC1pKSofSi7yNpIUM80PdR/aUlAIzjH51xUZBETu22M26bszLd1t8O3tgGU6gupJ5JzyCftV+ru2q1pUW0wWsdNyjVNWWEuTKDqZSYS4ydyXuhBPUD9aL3F6DbAh246okO7h+AO4z+VRVxJaHNYUs3tMLirl7FrA/KP8/YhXxskapleHFyZdkxVB1sp2I6njoK5GToy/NtLdcbW3nGEoX1q2dd6ybuMhxmHNeEVocpWrhRFLc7UUyPbUSXlBSFdBW5Vaz18xHKTMO056SJ4UaV1FZte2y4bktIBJDhV+HNdbh67Sdjq9RhDQ/FsArl7StyumoUOCG4tAAxuPSjkm16vg2YMxrs0/nJUkmqZ1ZXIUHf8AaTWyjYy4dV3iE7fYcVnU6x5Yy9td7d/pQ++3vS9lUzKj3dcnJy5tczmudIjioU1x+4veY6V/OnPWrmT4g6LvNgjWxOnx8SygJCghP3wRXNc6EDGYfKHvLa1BprSsTRL11eShITFKgoHrx/Wq5tfhBa4+hl6gvNzeakqaL5SFgJRkZA+1VxfL/qebZ4tmmTXlQkgBSc4BA6Z9a1X3WF9uMdu3LuLy4bSAnygeDj1pJGdOVRt8ie3eTZZWrEERt0P4cXS9WFVyN1cjw3VEtoBwSntmpl/8PrNa7PIeL8p6ShGUkrJ5qNoC5akt9uZXIDv7lT+PCvw5749KYNe3KK1am7haHH5kdaCHgPmCc96WfjKrd6bDI856nx85QMnLkD78yF4OJ09Z2Y96+AcfuTZUFKCclOeDVpv+JLpT/Z7O8o+5ArnXTV9fhMOuMkoDhPyUUiaquBcKXnlNJPStn1qUOGOMwfqg4Bl7SNXXa5Wea2m3ttpXHcScq5AKTmqkj4U2Buz60KY1LcHHCwxLd2ng+4onCx5KueRWbxJ0blKHM3uBuG51+UJNEqJIPQYFZNLWpQGK+jIHkKVgbsc1uZbUpHGB3NZJJzPTVHlEg3mSlDS97mAkdKEWRn418zJJwwk/wwf5j61neWHJs5qKCfKKtzmONw9KmuvNoeRHbYAbQM0VFzuZ1l3aGN7SQAMHnpWmaoON7CRjGOaxhNeZh1ODgZye1eqjuuKcSrnnhXtTSIvmBa5vEEvNvBfmBW5fTGKHT7y8pzyglRIPTGaOTjIjxwE4Cgee5xQ9qGytsqJSCtWc964pkwfMQPcxduV0lyMtoQptOPxE/NUSOktJypalEnqo9aPXeIkLwCnGD+dB34ykYShYPHJHSiKAVgSxV95IaWne2+FD5eDj0pljLKo6SknHU0oQNyAttzCgetG7DKV5bjKznYcAnuKVtXlOY7ReGGJNlkJP4uc1AlOIbZDilcJ71uluYyFYJobJbTKjqacJCVEdKJp6zcwQd4hxC/0kNg7QVdbpIfkLKFLS10Azj86FOrW86Fu5VjgZNGVWJDo2odUEivHLOUJSlCiQPWtE8KuQ5HWeFsZrXLltzFqRCjvIWnyTuV3rT/wm9dGg25IU20joDTciM6hwKbbSoJHTHWtyYN4uCg01E6nAAOM0B6tamwllFnnMA2xiTYrd8FAebIzyfWtLl1uUVpZ+Zx5QwMHgVZVm8OJchkuXBHkYHZdfWTQdtmXF1iVKLbTR5O4c0u3Fbac8wJx7Qvo3HqvWc83KHe3fOV5ZLjit2c9KYvDNuRbVvLuaCHP5CRV4M6Y0cm9iOh1b6WzhwJyRTPJg+HdoUhxcNsHqMp70qf6h5GBFRJP0lvSJyTgStZmjNWPaJZub9uUkNfK+kEbwkcEgd6Ao8MLyYK7xaZq3WiNyo6x89dVxmroyRAnRGX2P5lNnCVH6GkzUtq1Om/OOWi3sNxlJwfm6/bFNHV+mNyB238zWNVTElt5SemH9UxrW+xOcJt5JSppXBB6VIi6oRbHFWpxLn7ud6hSOx9KZrtofX1wm5MeK0yXNxAWefrxVnWLT8FUeM1fLKwHG0YWUpyCaQOo0fq87FT7ds+fnAiqs+0TLp4eWZq2Qb/b3FPxngPMZRknnoRjn60ur0TdZ1zfVHiuCKjlpa04z7Vddostlt80uQFutt5yGVKJQPoD0pg+Lj4UkNJP0FUu4nQ6nlIB7d4J6KsYAnLUzTt8iPKLkF75TgqSniiFnUtKQiQFJVjkKGDXSREJ78cdAB7EVTHi1HZZ1k6IaAkJZaXhPH8pzQ6NUbjynH0jnCavTvJU9R/E1W8B1lYIxwamspAQlGf160K05IS6VNpOeOfWiKlbcjoR3pnYGeoQ9JAfyzdlvFsbAggE9qT3/AN+T7lJMKSmOjG1CggK/P2po1Epx2OG0KO5SuTUmBDQ0wlKQMEc4oqEdZzpztiVzMuGubbOQ058JJjjqWkFtw8dBklOc00Wa42+a6xDe1DcIDr0fe6p9CQlp3j5Crgd/0plkxI7qQ28AodvXNDXtPMOILamysEZ3BPI+tPUvW2xG8j8Pzflcj795vjWS/mCJ8K8wrk0FKSULT+LBx+IZFD5MbUjf8f8Ac8NDON2fP4PWoD1snQ3t0KVJZbJwfJcKcj6Vons3Z6MmGu8TlMoGAhThHHTBPejmpII1aoHGQfpBV6vLtubMy6Lt3lrZU6Epf+ZKUjnjuaX4OvrROc2x4cxRPACY6uT9elTZGnIYc+dlK8ngY6VJh2qOwtOxtKVH0HSqOtaiLutucOQfpJ1gdExvznI7zefwhY6Uy2iB5cRx1YwSSRn0oRa2gHUtBZwSce1MV2eSmMhtsnGAOKzrTnaMUry7wFNGV8jgDmmLRE6zQIahdreZTjru5tWMhKQMY+5zQKJFkXKc1DiNqccfOEp9AByT7AZNGm9F3dl4JdWGWx0UckVpcLqUsXY4AmJxi4hQi9THCXJskplK49hIb7kJHSidvj6aXGDn7iRgdSUjNKi9P3WNEKTfUeWRwAKECBqNTimYUiU+R/8Ab6GtcKDsGmEWI6r/AIlk79DtHzZVrQ2R/wDjziptvvHh6+drIjoKf8uMVUU63aujJ/tMeVsP4ioZFCm4VwWtXlBQPfnFWWkEbtKtaR0WXdeb9oYNqR8SFKAxhCjSDe52l3UZhvPIJPO09qUm7ZcNi1rCdo755qOiLMJK0R3CE9SEnFWXT1+ZU32DbEbrZItdseD9taJU5+IrBNZXy3tXJpUqXLZSkcpQCM0oOv3FOAUqSn2FRnpDu7LjiyPQmoOkRjkzvxDAYnRzk25ja0iMpRIySDUmPKklID3yccj0ogUIAGxYSR1JqBMuNtjkokvtpJ75618lNNi7800gJIZK1pOVYHY1itorQVF4pJ4xihx1RYw8hhMtCljoAanMXWA9nY8k47Yq4rXGCZwGZ58GlQ2cn/NWxiO3wnBSU9zUkKK2tzah7CsXpDEdnzJLrTI7qWoJH60WvRE4Kidy+Z6WEKUFZzVM+J6Ma7mIT2aaH/sr3xP8YZKbujS+g2WpE5f99cFp3NMIH4lD19B6np60q2oSy4oTJ8ifKUMuSH1ZW4o85P8At2AArao4eaB6jbEzQ4UC1vMOmJnCWu23BDxOWlHCvY0YuD7hUH2v7sjII71ElMIfjkbcgjKvrUeLNDTQhSSkKT+BR7j/AHouczeI5ZKQkSP4rqipXAwaJpCgochISM0PgPIUdpAPfiiORySMURBmWV5s+HLigRnkZz6Go7rz8cHcNw7kVLS8hCCVEAYxWp/ator6+3SrBWMMNzmAZNy3OHcoH1yMGoSpTa152jjvU26MNgcNhRV7VEbaQ2opdaHIzkCj4YCQWsHeQpjiCcJQNxHHGKhbFKSVZxnviieWnnClGMjvmtUlAbbGEDGark9ImwyckzTF8th1CzyoGvZlw8x7YFcDr7VCnPKbCiAM9BzUOOSVBKznJ+c+1Qy75gvU7CW14Rzodkak3SZDcfkyEhDGEZCGupI91HH2A9aZrtrZEhYZTZXVNL4CttL/AIbeKdkddd0dqPT7tpvNsAbbaW2P7Q0PwuJz1yMHjOc8VY9vnaeukdb7D0UBvlTfAWj6pPIrapVUQATzF9hstYk7xdgW5i6qSk25xpPUkim216aERsGLILZPXKQajK1bZILQSJCOuM4oRe9bRVp/sN1bQoDkAUQbwRz8odveln57SmlXVxIV6JFKcjwmQ2lSmbw/vV1zik+Xri9rlrS3eCUDp8ooW9rHUSVEfvh9eeuD0phKnxttANYud94+23QrkCT5Kpbax1yvmt15sLraCE3CKhGMEBNVr++7xMOXrs7nsSrBqOpDq1ZkXVZSfVw1PotnczvVUDYQrdLYtt8pYktyMnoMVhbtGX26uktQWwj1UqgfxHwSyGlrUrqFZonE1zqK3pCIzyRx3Gc0YLYPywRZD1ha8eIMOW4vypD4BOMA4rTbX7ZMUmZcbnltKshClVXK7epsZdQtC/QjrUu326UtaXi0n4c8KWpW1I+5rwH/AByEYrJ3/WMC9ifiG0vi03HQ7Jaca+HUtXGcck0alX3TcIB2R5MWOOfOWMJ/81RLk+x2JpDqUKWtX92pROCr2Hp70vz73LkSjMnl+S7gqYb5IaA7gdEj3PNO6XgzZy+w+QzCnVKBsN5deq/E632xharRHW66eEreTtH1Cev54ql9Y67m3NxxT0px1wg7lk8j2HYD6Um369q89iMmQHllJWtxKicEnOOnt9KEJcLuck4I5r0FGmqoHwDESstZ+pj54dMrVZl3N5JLs1wuH1CRwkD2x/WmyGMPkg80L8PFtu6Nhqx+Fop4HccUagpHmuEgcVh3uWZiZ7vS1rXUgWEkHaCSPlV1OMioV0taH2dwBIHIwcGiAH8MpPIPIweleghSMA4Pp6UmfMfIyImokSbfMClFTjaTg+uKcbfKamQ0utkk8UMuUJDyMp6d/ah1uedtMhW8KVHJ+YD+X3pitwYkwKNHQMNO44Offpitwi4GVOEjBxUGJNamBKmXdwPp6VtkrKE4DilHr9qYDnEYRwR1keTHQVq3I4B4/wB6G3Bg+XtAzjnrW5bqnnwgLWcdMdBXtxUlP4Vcj36mu5zCeoItSGQ255iAQT1xXj7uGSpfASM81tfWgLUVq4A+1ArjLEr+zMk+Xn5z/pVs56zPucA7SG887OfUpvKGgeFHvUm3tBc5lsAkbxmvCA22Ak8dBU7TDRfvTLSRknJOenQ0MtmUrTEY/F2FE1fpxm8wD5F/tCfNiSE8KUkdWzjqKXbDqlN+s0S5eY5Gltny3XEnCmXB1HuPY1MuSnYDi2UKUAQR7YPXH/faqzs8kWzUd4gg/wAB8h5AHY96d0djH4SZkcXoQAWKJeds1kZ0dy2vsxfjmMbsJ4WOxH5j8xW2HZ3b7IUI8yGye/zY59MVRcu4yIcyNNZmeW8jLW49FDqnPtjcPvTXA1RLTJzcx8HNSMIfQMx5A7FQHr6itAZXpMT1Ceu8eb3phNrSrzrkzu7pHegmWkoDLAWt09CB1opp/UyCtMmXHhuP52/DyFBxpw+iHOo9gqrD0fq3QNwlJZudrTZpoPDbyPlJ9lVcX2L7y2Km9pWkeyXdxBWbdIORx8lanbPc9yUO299Keoymulm7vYmmHHkFpbTY6pGc0Huuq7EEfxIRUSklOG6j8fjuIQaPPYzn+RbrkjIU2UIxzu7VqbghpKfipKf8uDVlXdYvvmJat5jIHdfGRShctMeWgLEhKieQgHOK5OJKThpz6EqPh3kbUmrmY0VmEIbD0sDHyoyon6dvp1pRfuz6kuO3B1BdT0jqOEM/82OM/wCUc0DdvzEIqagxi68Uje6vG8n7HOD7lNBEuuzZSRIV8qVFRQjgI/Lgfbn3qlVFdQwgxFHsLHJMZZd5ZaQ6vcJ0xCdxdUFfL1/CkAkD0yBSiiXNuAWlx1QS8orWMk59yO/1P5Vlqa6bEPRYoS02UhISjgc9fr9TUWwJKfL3kndgY9hRBKnpPJSdkmO4og7m+fXI4NSWsjhJwMVjNQFtrSE5Uyrd6ZBr5hRLY4yen6VaRLH8JpSHLZKtqlYUy6VJGf5Vc/708Q0IS8c+wqm9F3JVs1Aw8SEMu/wnPoeh/OrmYTuO44wehFYGtr5LD7z2nCbxdpwD1G0mkAnOcDtWBSTlQVkg5B9a2HPy4weKiqcUhwbk/wA3IrOmyDNjZbOU/wA3cZqO/GQEr2gKJGfepDrZXyEhGf5kmvNxbewpJ6cKqd5zIGgR6O5HBcju+Qodh0P2qKLhdcALUlSc+4zRy4hIQT8pHqOD+VCWC245tQjp7URXYCLNXgwZNutxYeKjFWc45ByBWmbep6kELZwe3am1ENC28qQOlA798Kw2VFIJHTIq4tPiUaogZzFpx2XK/v3NqcfhFbsJbaATjNRi/vcHy/QCpiGwhsLcHzdgaKWJgFSYAk5K8egFGdDueXelu5CcNKTk+pGKCOrU20SpOCo8VutiiyrcVYJqIQw7ql5DqWyFJV83BB9qpySpY1vI548rB4+tWbIWted2NoGQO1VrL51RPkFIwnakc96d0f55k8WOKZDuq3gFDIO1XFMEZ6VMswWwpAlw46HkYGd7ZGFpI6HoD9jQC5ELQo46knAqfYJ7luvkY/KWvKSh1Bx8ycc/fmtQieZBm+JcVS465SUlqTHH8dDKtpUjoFAex6gY4NNOnr6u7pZhPvxJoScIakDy3Bx0Sr1+9JV6jrseonfKVlsk49FoUOPsQa1NOiHKbmRsBBUFD1TXYzJzLogamdtSUNGW+2wTgJkgrGO2HE/6g0/2XxAhS2UNuR4TxSkbXElIV98dfyFUldVrnWJi/WsKZdBIkJRwCSOTj9aVEXd9TiVSWGOTguFGw/XKcUM1K/UQi3Oh+EzrZaRqlbTceZEjgjCmgrasj2z1+1ELX4fxbetEh5SlLSrqSTXOuirxcTFPwVw3uMnJZUPMT7FOcGrF0p4pXUJSw8pEoJXtLW/Jz6bVYP5Gl20q7xtda23MJzYtwtNAbySQMJAwPyFELagMW5x9X4lnGc0GY/iO5OVZ4/2o1dMxrY2zkA7cmtCZkW7ksyJROcjP1ozZk7FJUR0FBYyS48VqPfij9uThaeScVUdJZpjMHlXEg4KXRgio8dJaUptWcpPB/pUi+bUvtqOB6eprF5JcZDwyVoGFAcZHY/8AfvUyJ6COQQQKt7w7vIulrTHccPxMfCVZ6qHY1Tal5IOeDwfrRbTN3dtVzRJbJAyAsD+ZNKaqj1U95o8N1n4a3foesv1pI6qyCB17ZrTIG8jj6e1YWi6xJ8Rp5CtyFJ6ipQQhSspc4BxmvOvWVM9uliuMiQ2FKbJQvkg1IK/kwtGRnkVHmoKXPMxkZrFj5j86zgHgEdKrmFQ9jI90aC0EsqUU90nr+tLzLhTMKcKQc9QCKaZ7CltZQoqAHUGkyc8uNOG1xQTnuOtEWRaAN4fk3lTMXynGyo4xnGc0ry1uyn1LWklPpRdL5ebCiUkenFSI8L4j8KsJP4iE1ynEEwLbQVbYGSHQjPGRmtsmMhA8xSskfkKZnYbUSIlLZ4xkKxjNKF9eWBt3ce1XVuYyGUIkHPO+bJA6JBqdHZ2knPA5ofDaU4cp5HcmjGwpa+YnPer9YuJqmOIRHccOB8ufSqsfdK3XXBnc64pf27fpTvrCaUQzHQopUvjPt3pFUQt07exxitXQ14BYzz3GbwSKxMCFODGCMnAz78V9OymYHBu68EH/AL9Kkxkf2lKiSQ2nd9+36n9K0T0lLnI+b/Wn5hAxivbYuenoVxKQXGf7O6R+aSf1H2paaWUktEDFMmjVGZCnWlRz8Q1ub/508ilx9Cm3Snp98VA6Se8cvDm4JEly0yVHyJSdmSeAexwaHaiiJgXB+E8yoYUcHJwPzoHAkKYfQ4g4UlWQe9OmsXEXjT8S9tpClIwy+MchWOD96jvJ7RXsVykWu5tusuHYlQzz2qxboi3SvJuC0NpTJSDyopwr0BHf0zVWqCjjAJApy0pL/edles6nCl9A8yPz1I6gVzDvOBn/2Q==" alt="Jeff" width="120" height="120">
+        <div>
+          <p class="hi">Hi, I'm Jeff.</p>
+          <p>I'm a fellow campground owner, so I know what goes into one: the early mornings, the repairs nobody sees, and the seasonal families who start to feel like your own. I'm not a fund or a big chain.</p>
+          <p>I built this because most answers to "what's my park worth?" are a broker's sales pitch or a guess. This gives you a straight number using the math buyers actually use, plus the moves that can make your park worth more.</p>
+          <p>Questions? Email me at <a href="mailto:jeff@whatsmycampgroundworth.com">jeff@whatsmycampgroundworth.com</a> or call <a href="tel:+17817990763">(781) 799-0763</a>. I read and answer every one.</p>
+        </div>
+      </div>
+      <p>I'm a buyer, not a broker. If you ever want to sell, I may make you an offer myself or introduce you to a buyer I trust. If you don't, the plan is yours to keep and use.</p>
+    </div>
+
+    <div class="block">
+      <h2>Common questions</h2>
+      <div class="faq">
+        <details><summary>Is this really free?</summary><p>Yes. No cost, no catch, and no obligation to do anything with it.</p></details>
+        <details><summary>Do I have to sell or list my park?</summary><p>No. Plenty of owners use the plan to raise income and keep running the park. Others use the number for refinancing, estate planning or a partner buyout.</p></details>
+        <details><summary>What if I don't know all my numbers?</summary><p>Round numbers are fine. If you leave expenses blank, I estimate them from typical campground operating costs and tell you I did.</p></details>
+        <details><summary>How accurate is the estimate?</summary><p>It's a solid starting range, not an appraisal. Your real value depends on things a form can't see, like your books, your market and the condition of the park. Your free report narrows it down.</p></details>
+        <details><summary>Why do you ask how I run the park?</summary><p>That's where most of the hidden value is. Things like metered electric, peak-weekend pricing and seasonal rates can add hundreds of thousands to what a park is worth.</p></details>
+        <details><summary>What happens to my park if I sell to you?</summary><p>I know you built something. Before anything is signed, we'll sit down and talk about what matters to you: the name, your staff, your seasonal families, and how the park runs. Plenty of parks are better off with new energy and the same heart.</p></details>
+        <details><summary>Will you sell my information?</summary><p>No. Your numbers stay with me. I only bring in a partner buyer if you ask me to.</p></details>
+        <details><summary>What happens after I send it?</summary><p>Your full report opens on the page right away. If you'd like, I'll set up a short call to walk through it. No pressure either way.</p></details>
+      </div>
+    </div>
+
+    <div class="closer">
+      <h2>Ready to see what your campground is worth?</h2>
+      <a class="go" href="#calc">Start my free estimate</a>
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap">Cap rates are set by the park class you pick: 8.5% for Class A, 9.25% for Class B and 10% for Class C, in line with 2026 survey data and asking prices for independent campgrounds.</div></footer>
+
+<script>
+(function(){
+  const STATES=["Maine","New Hampshire","Vermont","Massachusetts","Connecticut","Rhode Island","Alabama","Alaska","Arizona","Arkansas","California","Colorado","Delaware","Florida","Georgia","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maryland","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","South Carolina","South Dakota","Tennessee","Texas","Utah","Virginia","Washington","West Virginia","Wisconsin","Wyoming"];
+  const NE=new Set(STATES.slice(0,6));
+  const sel=document.getElementById('state');
+  STATES.forEach(s=>{const o=document.createElement('option');o.textContent=s;sel.appendChild(o)});
+  sel.value="Maine";
+  const $=id=>document.getElementById(id);
+  const num=id=>{const v=parseFloat($(id).value);return isFinite(v)&&v>0?v:0};
+  const radio=n=>(document.querySelector('input[name="'+n+'"]:checked')||{}).value;
+  const fmt=n=>'$'+Math.round(n).toLocaleString('en-US');
+  const short=n=>n>=1e6?'$'+(n/1e6).toFixed(n>=1e7?1:2).replace(/\.?0+$/,'')+'M':'$'+Math.round(n/1000)+'K';
+  let touched=false;
+
+  function estimate(){
+    const sites=num('rv')+num('tent')+num('cabins');
+    const rev=num('revenue');
+    let expGuessed=false;
+    let exp=num('expenses');
+    if(!exp&&rev){exp=rev*0.58;expGuessed=true}
+    let noi=rev-exp;
+    const downs=[],ups=[];
+    if(radio('owner')==='owner'){
+      const mgmt=Math.max(45000,rev*0.06);
+      noi-=mgmt;
+      downs.push('A buyer has to pay someone to do your job. I took out '+fmt(mgmt)+' for management.');
+    }
+    if(expGuessed) downs.push('No expense figure entered, so I assumed 58% of revenue. Real numbers usually help.');
+    const CAPS={A:8.5,B:9.25,C:10.0};
+    let cls=radio('pclass');
+    if(!cls){cls='C';downs.push('You didn’t pick a park class, so I used Class C to be safe.')}
+    let cap=CAPS[cls];
+    const s=radio('seasonal');
+    if(s==='3') ups.push('Mostly seasonal. Buyers like income that is already booked.');
+    else if(s==='2') ups.push('Heavy seasonal base. Buyers like income that is already booked.');
+    else if(s==='0') downs.push('Mostly nightly guests means less predictable income than a seasonal base.');
+    const wb=['pond','lake','river'].filter(k=>$('w_'+k).checked);
+    if(wb.length) ups.push('Your '+wb.join(' and ')+'. Water is scarce, and buyers look for it.');
+    if(wb.some(k=>radio('w_'+k+'_swim')==='yes')) ups.push('Swimming on site. Families pick parks for it.');
+    if(wb.some(k=>radio('w_'+k+'_fish')==='yes')) ups.push('Fishing on site. It brings people back year after year.');
+    if($('w_pool').checked) ups.push('Your pool'+(num('w_pool_n')>1?'s':'')+'. A big draw for families with kids.');
+    let capex=0;
+    const issues=[['c_septic',120000,'Septic or sewer work'],['c_elec',90000,'Electric upgrades'],['c_water',60000,'Water system work'],['c_roads',40000,'Road work'],['c_bldg',50000,'Bathhouse and building updates']];
+    issues.forEach(([id,base,label])=>{if($(id).checked){const c=base*Math.max(1,sites/100);capex+=c;downs.push(label+': a buyer may knock off up to '+fmt(c)+'.')}});
+    if(num('addable')>0){ups.push('Room to add RV sites. Approved plans or zoning make buyers count it.')}
+    const val=noi>0?noi/(cap/100)-capex:0;
+    let low=noi>0?noi/((cap+0.5)/100)-capex:0;
+    let high=noi>0?noi/((cap-0.5)/100)-capex:0;
+    // Upside levers: income gains turned into value at the same cap rate
+    const share=s==='3'?0.8:s==='2'?0.6:s==='1'?0.35:0.1;
+    const siteRev=rev*0.85,seaRev=siteRev*share,traRev=siteRev*(1-share);
+    const c=cap/100,levers=[];
+    const add=(name,noiGain,capexCost,how,cost)=>{const v=noiGain/c-(capexCost||0);if(v>5000)levers.push({name,v,noi:noiGain,capex:capexCost||0,how,cost})};
+    const rates=radio('rates'),wk=radio('weekends'),months=num('months')||5;
+    if(rates==='below')add('Bring nightly and seasonal rates up to market',traRev*0.06+seaRev*0.04,0,'Check five nearby parks for the same dates. Match their nightly rates now and move seasonal rates up over two renewals.','None');
+    if(radio('waitlist')==='yes'&&share>0.1)add('Raise seasonal rates where you have a waitlist',seaRev*(rates==='below'?0.02:0.05),0,'A waitlist means your seasonal rate is too low. Raise it 5 to 8% at the next renewal and keep the waitlist warm.','None');
+    if(radio('meter')==='no'&&share>0.1)add('Meter electric on seasonal sites',num('rv')*share*150,num('rv')*share*250,'Put a sub-meter on each seasonal site and bill actual usage. Seasonals with AC and heaters stop costing you money.','About $150 to $300 per site');
+    if(!$('o_dynamic').checked&&wk!=='no')add('Charge more on peak weekends and holidays',traRev*(wk==='yes'?0.04:0.02),0,'Set higher rates for summer weekends and holiday weeks in your reservation system. If you sell out, you are leaving money on the table.','None');
+    if(!$('o_online').checked)add('Take bookings online 24/7',traRev*0.07,0,'Use a campground reservation system so people can book at 10pm and in the off-season, when most of next summer gets booked.','Small monthly or per-booking fee');
+    if(!$('o_fee').checked)add('Add a reservation fee',traRev*0.025,0,'Add a $5 to $10 fee per booking. Campers are used to it from hotels and other parks.','None');
+    if(!$('o_rentals').checked)add('Add rentals and add-ons',rev*0.015,0,'Golf carts, kayaks, firewood bundles, s\'mores kits. Start with one or two and add what sells.','Varies, start small');
+    const small=(!$('o_late').checked?0.01:0)+(!$('o_pet').checked?0.008:0);
+    if(small)add('Small fees guests already expect',traRev*small,0,'Charge for early check-in, late check-out and pets. Most parks already do.','None');
+    const needFifty=Math.min(30,Math.max(0,Math.round(num('rv')*0.5-num('fifty'))));
+    if(needFifty)add('Upgrade '+needFifty+' sites to 50-amp full hookups',needFifty*350,needFifty*3500,'Big rigs need 50-amp and pay more for it. Start with your most-booked sites.','About $3,500 per site');
+    const rv=radio('reviews');if(rv!=='high')add('Raise your review score',traRev*(rv==='low'?0.04:0.015),0,'Ask every happy guest for a Google review at checkout and reply to every review, good or bad.','None');
+    if(months<=6)add('Stretch the season a few weeks each end',traRev*0.03,0,'Open two weeks earlier and close two weeks later. Fall weekends with an event fill up.','Some staff and utilities');
+    {const n=Math.min(40,Math.round(num('addable')));if(n)add('Add '+n+' more RV sites',n*3000,n*28000,'Get permits for the sites first, then build in phases so new sites pay for the next ones.','About $28,000 per site')}
+    levers.sort((a,b)=>b.v-a.v);
+    const upHigh=levers.reduce((t,l)=>t+l.v,0);
+    return{sites,noi,cap,cls,val:Math.max(0,val),low:Math.max(0,low),high:Math.max(0,high),downs:downs.slice(0,4),ups:ups.slice(0,5),rev,levers,upHigh,upLow:upHigh*0.55};
+  }
+
+  function waterText(){
+    const out=[];
+    if($('w_pool').checked) out.push('Pool x'+(num('w_pool_n')||1));
+    ['pond','lake','river'].forEach(k=>{if($('w_'+k).checked) out.push(k[0].toUpperCase()+k.slice(1)+' (swim '+(radio('w_'+k+'_swim')||'?')+', fish '+(radio('w_'+k+'_fish')||'?')+')')});
+    return out.join(', ');
+  }
+  document.querySelectorAll('[data-detail]').forEach(cb=>cb.addEventListener('change',()=>{$(cb.dataset.detail).hidden=!cb.checked}));
+  function sumSites(){$('totalsites').textContent=(num('rv')+num('tent')+num('cabins')).toLocaleString('en-US')}
+  ['rv','tent','cabins'].forEach(id=>$(id).addEventListener('input',sumSites));
+  try{const src=new URLSearchParams(location.search).get('src');$('h_source').value=src||'direct'}catch(e){$('h_source').value='direct'}
+  const REPORT_URL='https://script.google.com/macros/s/AKfycbzJ_kwSUBMnfFSnS9mnlYWkxWLlMxuugyMKC2GIwJwMRF3FjUCgxR-ik888vmT9eSFqLA/exec';
+  let last=null;
+  function render(){
+    const r=estimate();last=r;
+    const rangeEl=$('range');
+    if(r.noi<=0||!r.rev){
+      rangeEl.innerHTML='<span style="font-size:.55em">Your value shows here</span>';
+      $('midline').textContent='Fill in the questions above, including last season’s revenue, then click the button to show your park’s value.';
+      $('noi').textContent='—';$('cap').textContent='—';$('persite').textContent='—';
+      r.downs=[];r.ups=[];
+    }else{
+      rangeEl.innerHTML=short(r.low)+'<span class="dash">–</span>'+short(r.high);
+      $('midline').textContent='Middle of the range: '+fmt(r.val);
+      $('noi').textContent=fmt(r.noi);
+      $('cap').textContent=r.cap.toFixed(2)+'% (Class '+r.cls+')';
+      $('persite').textContent=r.sites?fmt(r.val/r.sites):'—';
+    }
+    rangeEl.classList.remove('flash');void rangeEl.offsetWidth;rangeEl.classList.add('flash');
+    const fill=(id,arr)=>{const ul=$(id);ul.innerHTML='';(arr.length?arr:[r.rev?'Nothing stood out from your answers.':'Appears after you enter your numbers.']).forEach(t=>{const li=document.createElement('li');li.textContent=t;ul.appendChild(li)})};
+    fill('downs',r.downs);fill('ups',r.ups);
+    const pn=$('parkname').value.trim(),pname=pn||'your campground';
+    const hook=$('gatehook');
+    $('gatehead').textContent='Get your free '+(pn||'Park')+' Value Analysis Report';
+    hook.innerHTML='';hook.append('See how to increase the value of '+pname);
+    if(r.val>0&&r.upHigh>0){const bb=document.createElement('b');bb.textContent=short(r.upHigh);hook.append(' by up to ',bb)}
+    hook.append('. Get the report now.');
+    const lv=$('levers');lv.innerHTML='';
+    if(r.val>0&&r.levers.length){
+      $('uprange').textContent=short(r.upLow)+' to '+short(r.upHigh)+' ↑';
+      $('uppct').textContent='That is '+Math.round(r.upLow/r.val*100)+'% to '+Math.round(r.upHigh/r.val*100)+'% more than today.';
+      $('upintro').textContent='I found '+r.levers.length+' moves for your park:';
+      r.levers.forEach(l=>{const li=document.createElement('li');const a=document.createElement('span');a.textContent=l.name;const b=document.createElement('span');b.className='lock';b.setAttribute('aria-label','Amount in your free report');b.textContent='+$'+Math.round(l.v/1000)+'K';li.append(a,b);lv.appendChild(li)});
+    }else{
+      $('uprange').textContent='—';$('uppct').textContent='';
+      $('upintro').textContent=r.val>0?'Your park is already running most of the plays I check for.':'Enter your numbers to see your upside.';
+    }
+  }
+
+  $('calc').addEventListener('input',()=>{touched=true});
+  $('calc').addEventListener('change',()=>{touched=true});
+  $('calc').addEventListener('submit',e=>{e.preventDefault();render();
+    $('tag').scrollIntoView({behavior:'smooth',block:'start'});});
+
+  function esc(t){return String(t).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]))}
+  const PLAYBOOK=[{"key": "up to market", "cost": "None, just a few hours of homework", "paras": ["Most family campgrounds are priced on gut feel and last year's rate sheet. The rate went up a couple of dollars a few years ago and nobody has wanted to touch it since. Meanwhile the park down the road raised prices and kept filling. If your sites are as good as theirs, you are giving that difference away every single night.", "Here's how to fix it. Pick the five parks a camper would compare you to, usually within 30 to 45 minutes. Price the same site types (water and electric, full hookup, tent) for the same dates: a July Saturday, a June Tuesday and a September weekend. Put it all in one simple table. Anywhere you're below the middle of the pack, move to the middle this coming season. For seasonals, don't jump all at once. Split the gap over two renewals, send the letter in the fall so people have time to plan, and include one sentence about something you improved this year.", "This costs nothing but a few hours. Expect a few grumbles and maybe a seasonal or two who leaves. If you have a waitlist, those sites refill fast. Every dollar of rate increase that sticks goes straight to your net income, and at today's cap rates every $10,000 a year of extra income adds roughly $100,000 or more to what your park is worth."]}, {"key": "waitlist", "cost": "None", "paras": ["A waitlist is the market telling you your seasonal rate is too low. People are lining up to pay you, and you're turning them away at the old price. That's money left on the table every year the list stays long.", "Count how many people are on the list and how long they've been waiting. If it's ten or more names, or people have waited more than a year, raise seasonal rates 5 to 8% at the next renewal and repeat each year until the list shrinks to a handful. Create a premium tier for your best seasonal sites (water view, bigger lot, corner, close to the bathhouse) and price those higher. Some parks also take a small refundable deposit to hold a waitlist spot, which quickly shows who is serious.", "It costs nothing. On 60 seasonal sites at $3,000 each, a 6% increase is about $10,800 a year, every year, with no new expenses."]}, {"key": "Meter electric", "cost": "About $150 to $300 per site for meters, installed by a licensed electrician", "paras": ["When electric is included in the seasonal rate, you're paying for every air conditioner, space heater, second fridge and hot tub on those sites. Electric rates have climbed, so a flat seasonal fee that worked ten years ago may now be costing you real money on your heaviest users. Metering makes it fair: people pay for what they use.", "Have a licensed electrician install a sub-meter on each seasonal pedestal. Before you bill anyone, check your state's rules on reselling electricity; most allow you to pass through your actual cost, but confirm it. Announce the change a full season ahead and send 'shadow bills' showing what each site used, so nobody gets surprised. Then bill actual usage at your cost per kilowatt-hour, monthly or at season end. Some parks lower the base seasonal rate a little at the same time to soften it.", "Meters run about $150 to $300 a site installed, more for meters you can read remotely. After reading and billing time, plan on recovering roughly $150 a site a season, more if your seasonals run a lot of AC or heat. Usage also tends to drop once people see the bill. The meters usually pay for themselves in about two seasons."]}, {"key": "peak weekends", "cost": "None", "paras": ["If your Fourth of July weekend sells out weeks ahead, you priced it too low. The campers who booked first got a bargain, and the ones who called later would have paid more. Hotels and airlines have done this forever. Campgrounds are catching up.", "List your top 15 to 25 dates: holiday weekends, July and August Saturdays, and big local events. Add a weekend premium of $5 to $15 a night and a higher holiday rate, with a two- or three-night minimum on holiday weekends. Most reservation systems let you set rates by date. Watch how fast those dates fill. If they're still sold out a month ahead, go higher next year. To keep things fair, leave midweek rates alone or add a midweek discount to fill the slow days.", "This costs nothing to set up. A few extra dollars a night across your peak dates and sites adds up to thousands a year in pure profit."]}, {"key": "online 24/7", "cost": "Usually a small monthly or per-booking fee", "paras": ["Campers book at 10 at night from the couch, and the off-season is when most of next summer gets booked. If the only way to book is calling and leaving a voicemail, a lot of those people just book somewhere else. You never even know they tried.", "Pick a reservation system built for small campgrounds. Compare a flat monthly fee against a per-booking fee based on your volume. Load your site map, site types, rates and rules, then put a big Book Now button on your website and your Google Business Profile. Keep the phone for people who prefer to call. Many parks pass the booking fee on to the guest.", "Setup takes a few days. The return is bookings you were losing after hours, fewer hours on the phone and far fewer double-bookings."]}, {"key": "reservation fee", "cost": "None", "paras": ["Campers are used to booking fees from hotels and other parks. A modest fee covers your card processing and reservation costs instead of eating into your nightly rate.", "Add a $5 to $10 fee per reservation as a line item in your system and show it clearly before checkout. Apply it to nightly bookings, not seasonals. Make it non-refundable on cancellation, which also cuts down on no-shows and people holding sites they don't use.", "It costs nothing. At 2,000 reservations a year, $7 each is $14,000 a year, almost all profit."]}, {"key": "rentals and add-ons", "cost": "Varies; start small", "paras": ["Your guests already spend money in town on things you could sell them right at the park. Every bundle of firewood they buy at the gas station is a sale you missed.", "Start with easy, high-margin items: firewood bundles, ice, propane and s'mores kits. In New England, buy firewood from a local certified source, because states restrict moving firewood to stop invasive pests. Then add rentals that fit your park: kayaks or paddleboards if you're on water, bikes, maybe golf carts. Talk to your insurance agent and use waivers before you rent anything with a motor. Let guests add these to their reservation online and pick them up at check-in. Track what sells and drop what doesn't.", "Store items cost very little to start. Rentals cost more up front but often pay for themselves in a season or two."]}, {"key": "Small fees", "cost": "None", "paras": ["Early check-in, late checkout, pets, extra vehicles, extra guests. Hotels charge for all of these, and most campers expect it. Giving them away for free trains guests to treat them as free.", "Write the list and pick fair numbers, for example $10 to $20 for early check-in or late checkout and a few dollars per pet per night. Put them in your reservation system and on your rules page. Train staff to apply them the same way every time. Inconsistency is what makes guests mad, not the fee itself.", "It costs nothing. It's small money per stay, but it adds up over a season and pays for itself in fewer people overstaying their checkout time."]}, {"key": "50-amp", "cost": "About $3,500 per site if your electric service has capacity; much more if it doesn't", "paras": ["Big rigs need 50-amp service, and many RVers filter for it when they search. Without it you're invisible to some of the best-paying campers on the road, and the ones you do get may be squeezing by on an adapter.", "Before you touch a single pedestal, have an electrician check whether your transformer and main service can handle the extra load. That's where the expensive surprises hide. Then upgrade your most-booked sites first, especially pull-throughs. Do the work in the off-season, in phases, and charge $5 to $10 a night more for 50-amp full-hookup sites.", "Figure about $3,500 a site where the capacity already exists. If the service needs upgrading, that's a bigger project to price separately. The return is a higher nightly rate plus bookings from the big rigs you're missing now."]}, {"key": "review score", "cost": "None", "paras": ["Campers read reviews before they book. The gap between a 4.2 and a 4.7 on Google is real money, and better reviews also push you higher in search results.", "Ask every happy guest at checkout, using a card or text message with a direct link to your Google review page, plus a QR code at the office. Reply to every review within a few days: thank the good ones, and answer the bad ones calmly with what you fixed. Watch for the complaints that keep repeating, usually bathhouse cleanliness, Wi-Fi or noise, and fix those first. Never buy reviews or offer discounts in exchange for them. That breaks Google's rules and can get reviews removed.", "It costs nothing but attention. The return is more bookings at the same price, and the room to raise rates later."]}, {"key": "Stretch the season", "cost": "Some staff time and utilities", "paras": ["Your taxes, insurance and loan payments run twelve months a year. Every extra week you're open earns money against those fixed costs.", "Look at the first two and last two weeks of your last three seasons. If they were busy, demand is there on either side. Fill the edges with reasons to come: a Halloween weekend, fall foliage, a fishing opener. You don't have to open the whole park. Keep the sites near a heated bathhouse open and winterize the rest, and watch frost risk on water lines.", "The cost is staff time, utilities and a bit of planning. The return is a few extra full weekends on each end of the season."]}, {"key": "more RV sites", "cost": "About $28,000 per site, varying with how far utilities have to run", "paras": ["Adding RV sites is usually the biggest lever you have, because land you already own is earning nothing right now. Every new RV site adds income without adding a new property tax bill on new land.", "Confirm with the town that zoning allows more sites and how many. Hire an engineer to lay them out and check septic, water and electric capacity, because that's where the costs hide. Get the permits, then build in phases of 10 to 20 sites so the first phase's income helps fund the next. Price new sites at full market rate from day one.", "Plan on roughly $28,000 a site. Permits can take a year or more in some New England towns, so start now even if you won't build until next fall. In my model each new site nets about $3,000 a year, which adds well more to your park's value than it costs to build."]}];
+  function findMove(n){return PLAYBOOK.find(m=>n.toLowerCase().includes(m.key.toLowerCase()))}
+  function buildReport(r,email){
+    if(!r||r.val<=0) return '<p>Add your revenue and expenses above to get your numbers.</p>';
+    const park=$('parkname').value.trim()||'your campground';
+    let h='<h3>'+esc(park)+' is worth about '+short(r.low)+' to '+short(r.high)+' today</h3>';
+    h+='<p>Buyers value a campground on its net operating income, what\'s left after operating expenses and before loan payments. I used '+fmt(r.noi)+' a year, divided by a '+r.cap.toFixed(2)+'% cap rate for a Class '+r.cls+' park. Every extra dollar of yearly income is worth roughly '+Math.round(100/r.cap)+' dollars in value.</p>';
+    const items=r.levers.map(l=>({l,m:findMove(l.name)})).filter(x=>x.m);
+    const g=x=>x.m.cost.indexOf('None')===0?0:(x.l.capex>0?2:1);
+    items.sort((a,b)=>g(a)-g(b)||b.l.v-a.l.v);
+    if(items.length){
+      h+='<h3>How to get up to '+short(r.upHigh)+' more</h3><p>In the order I\'d tackle them: free moves first, then low-cost, then the ones that take money.</p><ol class="rep">';
+      items.forEach(({l,m})=>{
+        h+='<li><b>'+esc(l.name)+'</b><div class="nums">Extra income: <b>'+fmt(l.noi)+' a year</b>'+(l.capex>0?' · Cost: <b>about '+fmt(l.capex)+'</b>':'')+' · Adds to value'+(l.capex>0?' after cost':'')+': <b>about '+fmt(l.v)+'</b></div>';
+        m.paras.forEach(t=>{h+='<p>'+esc(t)+'</p>'});
+        h+='<p class="cost">Typical cost: '+esc(m.cost)+'</p></li>';
+      });
+      h+='</ol>';
+    }
+    h+='<h3>Not up for all that?</h3><p>That\'s completely fair. Some of this is a lot of work, and plenty of owners have already put in their years. If you\'d rather hand the next chapter to someone who will look after the place, I\'d like to talk. I\'m not a fund. I care about the name, the staff and the seasonal families who\'ve been coming for years, and I\'d sit down with you about all of it before anything is signed.</p><p>Questions about any of it? Email me at jeff@whatsmycampgroundworth.com.</p>';
+    return h;
+  }
+  function detailsText(r){
+    const ans=['Campground: '+($('parkname').value.trim()||'not given'),'State: '+sel.value,'Town: '+$('town').value,'Sites: RV '+num('rv')+', tent '+num('tent')+', cabins '+num('cabins')+' (total '+(num('rv')+num('tent')+num('cabins'))+')','Acres: '+num('acres'),'RV sites they could add: '+num('addable'),'Water: '+(waterText()||'none'),'Revenue: '+fmt(num('revenue')),'Expenses: '+(num('expenses')?fmt(num('expenses')):'not given'),'Seasonal share: '+(['Under 20%','20-50%','50-70%','Over 70%'][+radio('seasonal')]||'?'),'Runs it: '+radio('owner'),'Rates vs nearby: '+radio('rates'),'Weekends: '+radio('weekends'),'Waitlist: '+radio('waitlist'),'Metered electric: '+radio('meter'),'50-amp sites: '+num('fifty'),'Months open: '+num('months'),'Reviews: '+radio('reviews'),'Class picked: '+(radio('pclass')||'none (used C)')];
+    if(r&&r.val>0){ans.push('ESTIMATE: '+fmt(r.low)+' to '+fmt(r.high)+' (NOI '+fmt(r.noi)+', cap '+r.cap.toFixed(2)+'%)');ans.push('UPSIDE: up to '+fmt(r.upHigh));r.levers.forEach(l=>ans.push(' - '+l.name+': +'+fmt(l.v)+' | income +'+fmt(l.noi)+'/yr | cost '+fmt(l.capex)))}
+    return ans.join('\n');
+  }
+  $('lead').addEventListener('submit',e=>{
+    e.preventDefault();
+    const err=$('leadErr');
+    const name=$('lname').value.trim(),email=$('lemail').value.trim();
+    if(!name||!/^\S+@\S+\.\S+$/.test(email)){err.textContent='Add your name and a valid email so I can send the report.';err.hidden=false;return}
+    err.hidden=true;
+    render();
+    const r=last;
+    const ne=NE.has(sel.value),soon=['This was my last one','1–2 more'].includes($('seasons').value),yes=$('offer').value==='Yes';
+    $('h_priority').value=(ne&&(soon||yes))?'HOT - New England, call within 1 business day':ne?'New England - nurture':'National - nurture';
+    $('h_details').value=detailsText(r);
+    const ok=r&&r.val>0;
+    const payload={name,email,phone:$('lphone').value.trim(),park:$('parkname').value.trim(),state:sel.value,town:$('town').value,
+      low:ok?Math.round(r.low):0,high:ok?Math.round(r.high):0,noi:ok?Math.round(r.noi):0,cap:ok?r.cap:0,cls:ok?r.cls:'',upHigh:ok?Math.round(r.upHigh):0,
+      levers:ok?r.levers.map(l=>({name:l.name,v:Math.round(l.v),noi:Math.round(l.noi),capex:Math.round(l.capex)})):[],
+      priority:$('h_priority').value,seasons:$('seasons').value,successor:$('successor').value,offer:$('offer').value,
+      source:$('h_source').value,bot:$('lead').querySelector('[name="bot-field"]').value,details:$('h_details').value};
+    fetch(REPORT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)}).catch(()=>{});
+    const phone=$('lphone').value.trim();
+    $('doneMsg').textContent='Thanks, '+name.split(' ')[0]+'. Here is your full Park Value Report. A copy is also on its way to your inbox from Jeff.'+((soon||yes)?(phone?' Jeff will give you a quick call in the next day or two to walk through your numbers.':' Jeff will reach out by email to set up a quick call if you’d like one.'):'');
+    $('report').innerHTML=buildReport(r,email);
+    $('gate').hidden=true;$('done').hidden=false;
+    $('done').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+
+  {const f=document.querySelector('.fromjeff img'),w=document.querySelector('.who .photo');if(f&&w)f.src=w.src}
+  render();
+})();
+</script>
+
+</body>
+</html>
